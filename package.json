@@ -1,0 +1,23 @@
+{
+	"name":"tafl-server",
+	"version":"v0.1.0",
+	"description":"a server/client for hosting 2 player games of tafl variants",
+	"homepage":"https://github.com/K-Francis-H/tafl_server/#readme",
+	"bugs":{
+		"url":"https://github.com/K-Francis-H/tafl_server/issues"
+	},
+	"license":"GPL-3.0-or-later",
+	"author":{
+		"name":"Kyle Harrity"
+	},
+	"dependencies":{
+		"node-uuid":"*",
+		"express":"*",
+		"body-parser":"*"
+	},
+	"scripts":{
+		"start":"node tafl_server.js"
+	}
+}
+	
+	 

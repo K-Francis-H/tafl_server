@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Tafl Games</title>
+		<script src="tafl-ui.js"></script>
+		<style>
+			#game-creation-container{
+				border:2px solid goldenrod;
+				padding : 10px;
+				border-radius: 10px;
+				text-align:center;
+				margin:auto;
+				width:300px;
+			}
+			#game-container{
+				display:none;
+			}
+			.variation-selector{
+				text-align:center;
+				width : 250px;
+				margin:auto;
+				padding:10px;
+			}
+
+
+			.variation-selector:focus{
+				border:2px solid goldenrod;
+				border-radius: 10px;
+			}
+
+			.rules-summary{
+				transition: height 1s;
+				-webkit-transition: height 1s;
+			}
+			.play-button{
+				border:2px solid goldenrod;
+				border-radius : 10px;
+				background-color : #F0D9B5;
+				color : #B58863;
+				font-weight : bold;
+				font-size : 18pt;
+				cursor : pointer;
+			}
+			.summary{
+				display:none;
+			}
+		</style>
+	</head>
+	<body>
+		<!--TODO start wit a create username, find game type dialog
+		<input type="radio" value="brandubh" name="variation">Brandubh
+		<input type="radio" value="gwddbwyll" name="variation">Gwddbwyll
+		<input type="radio" value="fidchell" name="variation">Fidchell
+		<input type="radio" value="ard_ri" name="variation">Ard Ri
+		<input type="radio" value="tablut" name="variation">Tablut
+		<input type="radio" value="tawlbwrdd" name="variation">Tawlbwrdd
+		<input type="radio" value="hnefatafl" name="variation">Hnefatafl
+		<input type="radio" value="large_hnefatafl" name="variation">Large Hnefatafl
+		<input type="radio" value="alea_evangelii" name="variation">Alea Avengelii
+		</br>
+		<button id="set-variation">Set Variation</button></br>
+		<button id="undo">Undo</button></br>-->
+		
+		
+		<div id="game-creation-container">
+			<p>Choose your side</p>
+			<input type="radio" value="white" name="color">White</br>
+			<input type="radio" value="black" name="color">Black</br>
+			<p>Choose Tafl Variation</p>
+			<div id="brandubh" class="variation-selector" tabindex="1">
+				<img src="images/brandubh.png" width=100 height=auto />
+				<p>Brandubh</p>
+				<div class="summary">
+					<ul class="rules-summary">
+						<li>7x7 Board</p>
+						<li>8 Attackers</li>
+						<li>5 Defenders</li>
+					</ul>
+					<button id="brandubh-button" class="play-button">Play</button>
+				</div>
+			</div>
+			
+			<div id="gwyddbwyll" class="variation-selector" tabindex="2">
+				<img src="images/gwddbwyll.png" width=100 height=auto />
+				<p>Gwddbwyll</p>
+				<div class="summary">
+					<ul class="rules-summary">
+						<li>7x7 Board</p>
+						<li>8 Attackers</li>
+						<li>5 Defenders</li>
+					</ul>
+					<button id="gwddbwyll-button" class="play-button">Play</button>
+				</div>
+			</div>
+			<div id="fidchell" class="variation-selector" tabindex="3">
+				<img src="images/fidchell.png"width=100 height=auto />
+				<p>Fidchell</p>
+				<div class="summary">
+					<ul class="rules-summary">
+						<li>7x7 Board</p>
+						<li>18 Attackers</li>
+						<li>9 Defenders</li>
+					</ul>
+					<button id="fidchell-button" class="play-button">Play</button>
+				</div>
+			</div>
+			<div id="ard-ri" class="variation-selector" tabindex="4">
+				<img src="images/ard_ri.png" width=100 height=auto />
+				<p>Ard Ri</p>
+				<div class="summary">
+					<ul class="rules-summary">
+						<li>7x7 Board</p>
+						<li>16 Attackers</li>
+						<li>9 Defenders</li>
+						<li>Unplayable For Defenders</li>
+					</ul>
+					<button id="ard-ri-button" class="play-button">Play</button>
+				</div>
+			</div>
+			<div id="tablut" class="variation-selector" tabindex="5">
+				<img src="images/tablut.png" width=100 height=auto />
+				<p>Tablut</p>
+				<div class="summary">
+					<ul class="rules-summary">
+						<li>9x9 Board</p>
+						<li>16 Attackers</li>
+						<li>9 Defenders</li>
+					</ul>
+					<button id="tablut-button" class="play-button">Play</button>
+				</div>
+			</div>
+			<div id="tawlbwrdd" class="variation-selector" tabindex="6">
+				<img src="images/tawlbwrdd.png" width=100 height=auto />
+				<p>Tawlbwrdd</p>
+				<div class="summary">
+					<ul class="rules-summary">
+						<li>11x11 Board</p>
+						<li>24 Attackers</li>
+						<li>13 Defenders</li>
+					</ul>
+					<button id="tawlbwrdd-button" class="play-button">Play</button>
+				</div>
+			</div>
+			<div id="hnefatafl" class="variation-selector" tabindex="7">
+				<img src="images/hnefatafl.png" width=100 height=auto />
+				<p>Hnefatafl</p>
+				<div class="summary">
+					<ul class="rules-summary">
+						<li>11x11 Board</p>
+						<li>24 Attackers</li>
+						<li>13 Defenders</li>
+					</ul>
+					<button id="hnefatafl-button" class="play-button">Play</button>
+				</div>
+			</div>
+			<div id="large-hnefatafl" class="variation-selector" tabindex="8">
+				<img src="images/large_hnefatafl.png" width=100 height=auto />
+				<p>Large Hnefatafl</p>
+				<div class="summary">
+					<ul class="rules-summary">
+						<li>13x13 Board</p>
+						<li>24 Attackers</li>
+						<li>13 Defenders</li>
+					</ul>
+					<button id="large-hnefatafl-button" class="play-button">Play</button>
+				</div>
+			</div>
+			<div id="alea-evangelii" class="variation-selector" tabindex="9">
+				<img src="images/alea_evangelii.png" width=100 height=auto />
+				<p>Alea Avengelii</p>
+				<div class="summary">
+					<ul class="rules-summary">
+						<li>19x19 Board</p>
+						<li>48 Attackers</li>
+						<li>25 Defenders</li>
+					</ul>
+					<button id="alea-evangelii-button" class="play-button">Play</button>
+				</div>
+			</div>
+		</div>
+		<div id="game-container">
+			<canvas id="canvas" width=800 height=800></canvas>
+			<p id="shareable-join-link"></p>
+		</div>
+	</body>
+</html>
