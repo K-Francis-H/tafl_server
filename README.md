@@ -2,23 +2,23 @@
 A server for hosting 2 player tafl games.
 Available variants include:
 
-![Alt text](site/images/brandubh.png?raw=true "Brandubh")
+![Alt text](site/images/brandubh.png?raw=true&s=100 "Brandubh")
 
-![Alt text](site/images/gwddbwyll.png?raw=true "Gwddbwyll")
+![Alt text](site/images/gwddbwyll.png?raw=true&s=100 "Gwddbwyll")
 
-![Alt text](site/images/fidchell.png?raw=true "Fidchell")
+![Alt text](site/images/fidchell.png?raw=true&s=100 "Fidchell")
 
-![Alt text](site/images/ard_ri.png?raw=true "Ard Ri")
+![Alt text](site/images/ard_ri.png?raw=true&s=100 "Ard Ri")
 
-![Alt text](site/images/tablut.png?raw=true "Tablut")
+![Alt text](site/images/tablut.png?raw=true&s=100 "Tablut")
 
-![Alt text](site/images/tawlbwrdd.png?raw=true "Tawlbwrdd")
+![Alt text](site/images/tawlbwrdd.png?raw=true&s=100 "Tawlbwrdd")
 
-![Alt text](site/images/hnefatafl.png?raw=true "Hnefatafl")
+![Alt text](site/images/hnefatafl.png?raw=true&s=100 "Hnefatafl")
 
-![Alt text](site/images/large_hnefatafl.png?raw=true "Large Hnefatafl")
+![Alt text](site/images/large_hnefatafl.png?raw=true&s=100 "Large Hnefatafl")
 
-![Alt text](site/images/alea_evangelii.png?raw=true "Alea Evangelii")
+![Alt text](site/images/alea_evangelii.png?raw=true&s=100 "Alea Evangelii")
 
 Rules
 ------------
