@@ -37,6 +37,10 @@ document.addEventListener("DOMContentLoaded", function(){
 		}
 		else if(colorSel[1].checked){
 			color = colorSel[1].value;
+		}
+		else if(colorSel[2].checked){//random
+			var index = Math.floor(Math.random() * (2));//choose 0 or 1 (black or white)
+			color = colorSel[index].value;
 		} 
 		else{
 			console.log("No selected color. Aborting game creation...");
