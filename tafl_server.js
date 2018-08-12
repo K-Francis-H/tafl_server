@@ -76,6 +76,12 @@ app.post("/move/:gameId/:playerId", function(req, res){
 	}else{
 		res.sendStatus(400);
 	}
+	if(game.isGameOver(req.params.gameId)){
+		setTimeout(function(){
+			game.destroy(req.params.gameId);
+			console.log("game: "+req.params.gameId+" destroyed.");
+		}, 60000);
+	}
 }); 
 
 /*app.get("/ping/:playerId", function(req, res){

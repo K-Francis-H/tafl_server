@@ -178,6 +178,10 @@ module.exports = {
 		}
 	},
 
+	destroy : function(gameId){
+		delete games[gameId];
+	},
+
 	move : function(gameId, playerId, token, state){
 		if(games[gameId]){
 			return games[gameId].setMove(playerId, token, state);
@@ -194,6 +198,10 @@ module.exports = {
 		}else{	
 			//TODO freakout
 		}
+	},
+
+	isGameOver : function(gameId){
+		return games[gameId].isWinState();
 	}
 
 }
@@ -217,6 +225,7 @@ function Game(creatorColor, variant){
 	};
 
 	var state = INITIAL_STATE[variant];
+	var size = state.length;
 	
 	var states = [];
 	states.push(JSON.parse(JSON.stringify(state)));
@@ -301,6 +310,29 @@ function Game(creatorColor, variant){
 			case "large_hnefatafl":	return "Large Hnefatafl";
 			case "alea_evangelii":	return "Alea Evangelii";
 		}
+	}
+
+	this.isWinState = function(){
+		var lastState = states[states.length -1];
+		var foundKing = false;
+		for(var i=0; i < size; i++){
+			for(var j=0; j < size; j++){
+				if(!foundKing){
+					foundKing = (lastState[i][j] & K) > 0;
+				}
+				if( (lastState[i][j] & K) > 0 && isCorner(i, j)){
+					return true;
+				}
+			}
+		}
+		return !foundKing; //king is still in game, but not in corner
+	}
+
+	function isCorner(i, j){
+		return i === 0 && j === 0 
+		|| i === size-1 && j === 0
+		|| i === size-1 && j === size-1
+		|| i === 0 && j === size-1
 	}
 }
 
