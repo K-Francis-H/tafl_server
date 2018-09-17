@@ -13,35 +13,21 @@ document.addEventListener("DOMContentLoaded", function(){
 			var value = kvPair[1];
 			gameInfo[key] = value;
 		}
-		if(!gameInfo || !gameInfo.gameId || !gameInfo.playerId){
+		if(!gameInfo || !gameInfo.playerColor || !gameInfo.variant){
 			//TODO exit loudly
 			console.log("bad data: "+gameInfo);
 		}
 		//otherwise getstatus and begin
 		//also make shareable link
 
-		getStatus(gameInfo.gameId, gameInfo.playerId, function(state){
+		console.log("variant: "+gameInfo.variant);
+		console.log(getVariantStart(gameInfo.variant));
 
-			if(state.token){
-				gameInfo.token = state.token;
-			}
-			gameInfo.move = state.move;
-			gameInfo.color = state.color;
+		taflBoard = new TaflBoard(canvas, getVariantStart(gameInfo.variant), gameInfo);
+		taflBoard.draw();
+		taflBoard.loop();
+		//TODO taflboard is very tied to multiplayer networking, need to divorce local UI control from it
 
-			taflBoard = new TaflBoard(canvas, state.state, gameInfo);
-			taflBoard.draw();
-			taflBoard.loop();
-			//create and display join link 
-			if(gameInfo.j != 1){//they were shared, dont show a link
-				var shareLink = document.getElementById("shareable-join-link");
-				shareLink.textContent = window.location.host+"/join/"+gameInfo.gameId;
-				var label = document.getElementById("share-label");
-				label.style.display="block";
-			}
-
-			//set page title
-			document.getElementById("variant").textContent = upperFirstLetter(state.variant); 
-		});
 	}else{
 		//TODO exit loudly
 		console.log("no data");
@@ -49,6 +35,20 @@ document.addEventListener("DOMContentLoaded", function(){
 
 	
 });
+
+function getVariantStart(variant){
+		switch(variant){
+			case "brandubh": 	return BRANDUBH;
+			case "gwddbwyll":	return GWDDBWYLL;
+			case "fidchell":	return FIDCHELL;
+			case "ard_ri":		return ARD_RI;
+			case "tablut":		return TABLUT;
+			case "tawlbwrdd":	return TAWLBWRDD;
+			case "hnefatafl":	return HNEFATAFL;
+			case "large_hnefatafl":	return LARGE_HNEFATAFL;
+			case "alea_evangelii":	return ALEA_EVANGELII;
+		}
+	}
 
 const W = 0x01;//white
 const B = 0x02;//black
@@ -196,7 +196,7 @@ const ALEA_EVANGELII =
  [0,0,B,0,0,B,0,0,0,0,0,0,0,B,0,0,B,0,0]];
 
 function TaflBoard(canvas, variant, gameInfo){
-	console.log(gameInfo);
+
 	var self = this;
 
 	const DARK = "#B58863";//"#000";
@@ -221,14 +221,23 @@ function TaflBoard(canvas, variant, gameInfo){
 	var states = [];
 	states.push(state);
 
-	//get game init info
-	var playerColor = gameInfo.color;
-	var moveColor = gameInfo.move;
-	var moveToken;
-	if(playerColor === moveColor){
-		moveToken = gameInfo.token;
-	}
-	setMoveInfo(playerColor, moveColor);
+	var playerColor = gameInfo.playerColor;
+	var aiColor = playerColor === "white" ? "black" : "white";
+	var moveColor = "black";
+
+	var ai = new AI(aiColor, 3);//TODO play with search depth to find optimal speed/difficulty
+	setMoveInfo(playerColor, moveColor); 
+
+	
+	//if(playerColor === "white"){
+	//	aiMove();
+	//}
+
+	this.loop = function(){
+		if(playerColor != moveColor){
+			aiMove();
+		}
+	};
 
 	this.draw = function(){
 		clear();
@@ -264,81 +273,13 @@ function TaflBoard(canvas, variant, gameInfo){
 		drawPieces(state);
 	};
 
-	this.undo = function(){
-		//TODO have to actually get other players permission for this feature...
-		if(states.length > 1){
-			state = states.pop();
-			self.draw();
-		}
-	};
-
-	this.loop = function(){
-		if(playerColor !== moveColor){
-			setTimeout(function(){
-				getStatus(gameInfo.gameId, gameInfo.playerId, handleStatus);
-			}, 1500);
-		}
-	};
-
-	function handleStatus(newState){
-		var isSame = isStateEqual(state, newState.state);
-		if(isSame === true){
-			console.log("looping...");
-			self.loop();
-		}else if(isSame){//is an object, but different
-			//set state
-			//states.push(JSON.parse(JSON.stringify(newState.state)));
-			state = newState.state;
-			//TODO apply connotations
-			
-			//change move color over
-			moveToken = newState.token;
-			moveColor = moveColor === "white" ? "black" : "white";
-
-			var winner = isWinState();
-			if(!winner){//still contested
-				setMoveInfo(playerColor, moveColor);
-
-				//redraw
-				self.draw();
-				self.loop();
-			}
-			else{
-				self.draw();
-				setGameOver(winner);
-			}
-		}else{
-			//TODO very not same...
-			console.log("really bad...");
-		}
-	}
-
-	function isStateEqual(a, b){
-		var diffStates = [];
-
-		if(a.length !== b.length){
-			return false;
-		}
-		for(var i=0; i < a.length; i++){
-			if(a[i].length !== b[0].length){
-				return false;
-			}
-			for(var j=0; j < a[0].length; j++){
-				if(a[i][j] !== b[i][j]){
-					diffStates.push({
-						x : i,
-						y : j,
-						a : a[i][j],
-						b : b[i][j]
-					});
-				}
-			}
-		}
-		if(diffStates.length === 0){
-			return true;
-		}else{
-			return diffStates;
-		}
+	function aiMove(){
+		var move = ai.getMove(static_clearBoardAnnotations(state));
+		console.log(move);
+		states.push(state);
+		state = move;
+		self.draw();
+		moveColor = playerColor;
 	}
 
 	function drawAvailableMove(x, y, width, height, style){
@@ -464,6 +405,18 @@ function TaflBoard(canvas, variant, gameInfo){
 		}
 	}
 
+	function static_clearBoardAnnotations(cur_state){
+		var state = JSON.parse(JSON.stringify(cur_state));
+		for(var i=0; i < size; i++){
+			for(var j=0; j < size; j++){
+				if( (state[i][j] & FLAG_MASK) > 0){
+					state[i][j] &= (!FLAG_MASK | PIECE_MASK);
+				}
+			}
+		}
+		return state;
+	}
+
 	function checkCaptures(position){
 		console.log(position);
 		//figure out position color
@@ -515,7 +468,7 @@ function TaflBoard(canvas, variant, gameInfo){
 	//TODO cleanup
 	canvas.onclick = function(event){//update state
 
-		if(playerColor !== moveColor || !moveToken){
+		if(playerColor !== moveColor ){
 			return; //not our turn
 		}
 
@@ -568,7 +521,7 @@ function TaflBoard(canvas, variant, gameInfo){
 			checkCaptures({x: tileX, y: tileY});
 			
 
-			setMove(gameInfo.gameId, gameInfo.playerId, moveToken, state, function(isValid){
+			/*setMove(gameInfo.gameId, gameInfo.playerId, moveToken, state, function(isValid){
 				if(isValid){//set move
 					states.push(lastState);
 					
@@ -595,8 +548,21 @@ function TaflBoard(canvas, variant, gameInfo){
 					//and revert
 					state = lastState;
 				}
-			});
+			});*/
+			states.push(lastState);
+			pieceSelected = false;
+			moveColor = moveColor === "white" ? "black" : "white";
+			var winner = isWinState();
+			if(!winner){//still contested
+				setMoveInfo(playerColor, moveColor);
 
+				//redraw
+				self.draw();
+				self.loop();
+			}
+			else{
+				setGameOver(winner);
+			}
 			
 		}
 		//TODO show last move
@@ -691,36 +657,7 @@ function TaflBoard(canvas, variant, gameInfo){
 	}
 }
 
-function getStatus(gameId, playerId, callback){
-	var ajax = new XMLHttpRequest();
-	ajax.open("GET", "/game/"+gameId+"/"+playerId, true);
-	ajax.onreadystatechange = function(){
-		if(ajax.readyState === 4 && ajax.status === 200){
-			callback(JSON.parse(ajax.responseText));
-		}
-	};
-	ajax.send();
-}
-
-function setMove(gameId, playerId, token, state, callback){
-	var ajax = new XMLHttpRequest();
-	ajax.open("POST", "/move/"+gameId+"/"+playerId, true);
-	ajax.setRequestHeader("Content-type", "application/json");
-	ajax.onreadystatechange = function(){
-		if(ajax.readyState === 4){
-			if(ajax.status === 200){
-				callback(true);
-			}else{
-				callback(false);
-			}
-		}
-	};
-	ajax.send(JSON.stringify({
-		token : token,
-		state : state
-	}));
-}
-
+//HTML control functions
 function setMoveInfo(color, move){
 	document.getElementById("playing-as").textContent = "Playing as "+upperFirstLetter(color);
 	document.getElementById("to-play").textContent = upperFirstLetter(move)+" to Play";

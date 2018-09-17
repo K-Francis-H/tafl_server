@@ -29,8 +29,20 @@ document.addEventListener("DOMContentLoaded", function(){
 	}
 
 	function setUpGame(buttonId){
+		var opponentSelect = document.getElementsByName("opponent");
+		var opponent;// = opponentSelect[0].checked ? opponentSelect[0].value : opponentSelect[1].value;
+		if(opponentSelect[0].checked){
+			opponent = opponentSelect[0].value;
+		}else if(opponentSelect[1].checked){
+			opponent = opponentSelect[1].value;
+		}else{
+			console.log("No selected opponent!!!");
+			return;
+		}
+		
+
 		//check if color is selected
-		colorSel = document.getElementsByName("color");
+		var colorSel = document.getElementsByName("color");
 		var color;
 		if(colorSel[0].checked){
 			color = colorSel[0].value;
@@ -67,7 +79,11 @@ document.addEventListener("DOMContentLoaded", function(){
 
 		//if we got this far we have a color and a variant
 		//ask server to create game
-		createGame(color, variant);
+		if(opponent === "ai"){
+			createLocalAIGame(color, variant);
+		}else{
+			createGame(color, variant);
+		}
 
 	}
 
@@ -96,6 +112,10 @@ document.addEventListener("DOMContentLoaded", function(){
 			variant:variant//,
 			/*TODO add: username:username*/
 		}));
+	}
+
+	function createLocalAIGame(color, variant){
+		window.open("/tafl-game-lai.html?playerColor="+color+"&variant="+variant);
 	}
 
 });
