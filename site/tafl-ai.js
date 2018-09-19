@@ -226,6 +226,7 @@ function TaflBoard(canvas, variant, gameInfo){
 	var moveColor = "black";
 
 	var ai = new AI(aiColor, 3);//TODO play with search depth to find optimal speed/difficulty
+	//if greater than 1 we sometimes get extra pieces???? examine move generator, applier functions
 	setMoveInfo(playerColor, moveColor); 
 
 	
@@ -273,13 +274,32 @@ function TaflBoard(canvas, variant, gameInfo){
 		drawPieces(state);
 	};
 
-	function aiMove(){
+	function aiMove(){//TODO AI not evaluating captures.....
+		//TODO below functin may fuck everything up
+		console.log("pre ai state");
+		console.log(state);
 		var move = ai.getMove(static_clearBoardAnnotations(state));
+		var stateAI = stateFromMove(state, move, aiColor);
 		console.log(move);
 		states.push(state);
-		state = move;
+		state = stateAI;
+		clearBoardAnnotations(state);
+		setLastMoveAI(state, move);
+		checkCaptures({x: move.ex, y: move.ey});
 		self.draw();
 		moveColor = playerColor;
+	}
+
+	//TODO need to use actual evaluation functions this just moves a piece, but does not apply its effects (captures, etc)
+	function stateFromMove(gameState, move, color){
+		color = color === "white" ? W : B;//TODO does not handle kings at all
+		console.log(move);
+		//TODO remove pieces if captured
+		copyState = JSON.parse(JSON.stringify(gameState));
+		copyState[move.sx][move.sy] = 0x00;
+		copyState[move.ex][move.ey] = color;
+		//console.log(copyState);
+		return copyState;
 	}
 
 	function drawAvailableMove(x, y, width, height, style){
@@ -646,6 +666,11 @@ function TaflBoard(canvas, variant, gameInfo){
 	function setLastMove(state, start, end){
 		state[start.x][start.y] |= LAST_MOVE;
 		state[end.x][end.y] |= LAST_MOVE;
+	}
+
+	function setLastMoveAI(state, move){
+		state[move.sx][move.sy] |= LAST_MOVE;
+		state[move.ex][move.ey] |= LAST_MOVE;
 	}
 
 	function isOurPiece(tile){

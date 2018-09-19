@@ -12,12 +12,12 @@ function AI(color, searchDepth){
 	this.getMove = function(gameState){
 		//run minimax, return a value that the game understands (start sqaure, end sqaure)
 		//console.log(gameState);
-		return stateFromMove(gameState, minimax(gameState, null, 0, ourColor).move, ourColor);
+		return minimax_old(gameState, null, 0, ourColor, Number.MIN_SAFE_INTEGER , Number.MAX_SAFE_INTEGER).move; //TODO invalid moves coming through...
 		//minimax(gameState, null, 0, ourColor);
 	};
 
 	//TODO need to clear pieces that are captured
-
+	//TODO dont include moves that are just transpositions of other available moves
 	//must also check whether this is the king moving or 
 	function getMoves(gameState, color){
 		moves = [];
@@ -97,26 +97,98 @@ function AI(color, searchDepth){
 	}
 
 	function stateFromMove(gameState, move, color){
+		//console.log(move);
 		//TODO remove pieces if captured
 		copyState = JSON.parse(JSON.stringify(gameState));
 		copyState[move.sx][move.sy] = EMPTY_SPACE;
 		copyState[move.ex][move.ey] = color;
-		//console.log(copyState);
+
+		var position = {
+			x : move.ex,
+			y : move.ey
+		};
+		//var state = copyState;
+		var size = copyState.length;
+		
+		//now check captures
+		if(position.x+2 < size && ( (copyState[position.x+2][position.y] & color) > 0 || isSpecialCell(size, position.x+2, position.y)) && (copyState[position.x+1][position.y] & color) === 0){
+			console.log("x+")
+			copyState[position.x+1][position.y] = 0;
+		}
+		if(position.x-2 >= 0 && ( (copyState[position.x-2][position.y] & color) > 0 || isSpecialCell(size, position.x-2, position.y)) && (copyState[position.x-1][position.y] & color) === 0){
+			console.log("x-");
+			copyState[position.x-1][position.y] = 0;
+		}
+		if(position.y+2 < size && ( (copyState[position.x][position.y+2] & color) > 0 || isSpecialCell(size, position.x, position.y+2)) && (copyState[position.x][position.y+1] & color) === 0){
+			console.log("y+")
+			copyState[position.x][position.y+1] = 0;
+		}
+		if(position.y-2 >= 0 && ( (copyState[position.x][position.y-2] & color) > 0 || isSpecialCell(size, position.x, position.y-2)) && (copyState[position.x][position.y-1] & color) === 0){
+			console.log("y-");
+			copyState[position.x][position.y-1] = 0;
+		}
+
 		return copyState;
+	}
+
+	function applyCaptures(position){
+		console.log(position);
+		//figure out position color
+		var color;
+		if( (state[position.x][position.y] & PIECE_MASK) === B){
+			color = B;
+		}
+		else if( (state[position.x][position.y] & PIECE_MASK) === W || (state[position.x][position.y] & PIECE_MASK) === K){
+			color = W | K;
+		}
+		else{
+
+			return;//not a valid position to check captures
+		}
+		/*console.log("c: "+color);
+		console.log(state[position.x][position.y]);
+		console.log(state);
+		console.log(position.x-2);
+		console.log(state[position.x-2][position.y]);
+		console.log((state[position.x-2][position.y] & color));
+		console.log((state[position.x-1][position.y] & color));*/
+
+		//now check adjacenct capture zones
+		if(position.x+2 < size && ( (state[position.x+2][position.y] & color) > 0 || isSpecialCell(position.x+2, position.y)) && (state[position.x+1][position.y] & color) === 0){
+			console.log("x+")
+			state[position.x+1][position.y] = 0;
+		}
+		if(position.x-2 >= 0 && ( (state[position.x-2][position.y] & color) > 0 || isSpecialCell(position.x-2, position.y)) && (state[position.x-1][position.y] & color) === 0){
+			console.log("x-");
+			state[position.x-1][position.y] = 0;
+		}
+		if(position.y+2 < size && ( (state[position.x][position.y+2] & color) > 0 || isSpecialCell(position.x, position.y+2)) && (state[position.x][position.y+1] & color) === 0){
+			console.log("y+")
+			state[position.x][position.y+1] = 0;
+		}
+		if(position.y-2 >=  0 && ( (state[position.x][position.y-2] & color) > 0 || isSpecialCell(position.x, position.y-2)) && (state[position.x][position.y-1] & color) === 0){
+			console.log("y-");
+			state[position.x][position.y-1] = 0;
+		}
+
+		//TODO above is done, enforce king in hall rule?
+
+		//TODO check win condition
+		
 	}
 
 	function scoreState(gameState, move, color){
 		//eval game state with heuristics
 		//console.log("scoring state");
 		//just random for now see if we can get it to work
-		var score = getRandomInt(0,100);
-		console.log("score: "+score);
-		return { score : getRandomInt(0,100),
+		var score = getRandomInt(0,1000);
+		//console.log("score: "+score);
+		return { score : getRandomInt(0,1000),
 			 move  : move };
 	}
 
 	//TODO need to pick the top level best move seems to be sending the bottom level move
-	function minimax(gameState, move, level, color){
+	function minimax_old(gameState, move, level, color){
 		//console.log("level: "+level);
 		//console.log("color: "+color);
 		//console.log(gameState);
@@ -128,32 +200,123 @@ function AI(color, searchDepth){
 			score : 0,
 			move : move
 		};
-		bestScore.score = color == ourColor ? Number.MIN_SAFE_INTEGER : Number.MAX_SAFE_INTEGER;	//set worst case scores
-		var changeColor = color == ourColor ? theirColor : ourColor; 				//get the next levels color
+		bestScore.score = color === ourColor ? Number.MIN_SAFE_INTEGER : Number.MAX_SAFE_INTEGER;	//set worst case scores
+		//var minMaxFunc = color === ourColor ? Math.max : Math.min;
+		var changeColor = color === ourColor ? theirColor : ourColor; 				//get the next levels color
 		var moves = getMoves(gameState, color);
-		console.log(moves.length);
+		//console.log(moves.length);
 		for(var i=0; i < moves.length; i++){
-			console.log("move: "+i);
-			var stateScore = minimax(
+			//console.log("move: "+i);
+			var stateScore =  minimax_old(
 				stateFromMove(gameState, moves[i], color),
 				moves[i],
 				level + 1,
 				changeColor
 			);
-			console.log(stateScore);
+			//console.log(stateScore);
 
 			if(color == ourColor){
+				
 				if(stateScore.score > bestScore.score){
 					bestScore = stateScore;
 				}
+				//if this score is greater than the worst case (for me) move of my opponent, I ignore it and return
+				//alpha = Math.max(alpha, stateScore);
+				//if(alpha > beta){
+					//break;
+				//	return bestScore;
+				//}
 			}else{
 				if(stateScore.score < bestScore.score){
 					bestScore = stateScore;
 				}
+				//if this score is better than the worst case (for my opponent) move I ignore it and return
+				//beta = Math.min(beta, stateScore);
+				//if(beta > alpha){
+					//break;
+				//	return bestScore;
+				//}
 			}
 		}
 		return bestScore;
 	}
+
+	//TODO a,b pruning is not delivering the correct moves its seems
+	//same with old algo maybe a,b just exasperates problem
+	function minimax(gameState, move, level, color, alpha, beta){
+		if(level == searchDepth || isTerminalState(gameState, move)){
+			return scoreState(gameState, move, color); 
+		}
+
+		var moves = getMoves(gameState, color);
+
+		if(color === ourColor){
+			var bestScore = {
+				score : Number.MIN_SAFE_INTEGER,
+				move : move
+			};
+			
+			//console.log(moves.length);
+			for(var i=0; i < moves.length; i++){
+				var score = minimax(
+					stateFromMove(gameState, moves[i], color),
+					moves[i],
+					level + 1,
+					theirColor,
+					alpha,
+					beta
+				);
+				bestScore = bestScore.score > score.score ? bestScore : score; //Math.max(bestScore.score, score.score);//cause we attach move data making this an object...
+				
+				//console.log("our move: "+alpha+" "+beta);
+				alpha = Math.max(alpha, bestScore.score);
+				if(alpha >= beta){
+					/*return {
+						score : alpha,
+						move : score.move
+					};*/
+					//break;
+					return bestScore;
+				}
+			}
+			return bestScore; //if we reach this all options were on the table no pruning
+		}else{
+			var bestScore = {
+				score : Number.MAX_SAFE_INTEGER,
+				move : move
+			};
+			
+			//console.log(moves.length);
+			for(var i=0; i < moves.length; i++){
+				var score = minimax(
+					stateFromMove(gameState, moves[i], color),
+					moves[i],
+					level + 1,
+					ourColor,
+					alpha,
+					beta
+				);
+				bestScore = bestScore.score < score.score ? bestScore : score;
+				beta = Math.min(beta, bestScore.score);
+				//console.log("their move: "+alpha+" "+beta);
+				if(alpha >= beta){
+					/*return {
+						score : beta,
+						move : score.move
+					};*/
+					//break;
+					return bestScore;
+				}
+			}
+			return bestScore;
+		}
+	}
+
+	//function negamax(gameState, move, level, alpha, beta){
+	//	if(isTerminalState(gameState, move) || level === searchDepth){
+
+	//	}
+	//}
 
 	function Move(startCoords, endCoords){
 		this.sx = startCoords[0];
