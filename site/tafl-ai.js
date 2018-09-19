@@ -264,7 +264,7 @@ function TaflBoard(canvas, variant, gameInfo){
 				ctx.fillRect(i*tileSizeX, j*tileSizeY, tileSizeX, tileSizeY);
 
 				if( (state[i][j] & VALID_MOVE) > 0){
-					console.log(state[i][j]);
+					//console.log(state[i][j]);
 					var style = lastStyle === BLACK ? AVAILABLE_MOVE_DARK : AVAILABLE_MOVE_LIGHT;
 					drawAvailableMove(i*tileSizeX, j*tileSizeY, tileSizeX, tileSizeY, style);
 				}
@@ -276,11 +276,11 @@ function TaflBoard(canvas, variant, gameInfo){
 
 	function aiMove(){//TODO AI not evaluating captures.....
 		//TODO below functin may fuck everything up
-		console.log("pre ai state");
-		console.log(state);
+		//console.log("pre ai state");
+		//console.log(state);
 		var move = ai.getMove(static_clearBoardAnnotations(state));
 		var stateAI = stateFromMove(state, move, aiColor);
-		console.log(move);
+		//console.log(move);
 		states.push(state);
 		state = stateAI;
 		clearBoardAnnotations(state);
@@ -293,7 +293,7 @@ function TaflBoard(canvas, variant, gameInfo){
 	//TODO need to use actual evaluation functions this just moves a piece, but does not apply its effects (captures, etc)
 	function stateFromMove(gameState, move, color){
 		color = color === "white" ? W : B;//TODO does not handle kings at all
-		console.log(move);
+		//console.log(move);
 		//TODO remove pieces if captured
 		copyState = JSON.parse(JSON.stringify(gameState));
 		copyState[move.sx][move.sy] = 0x00;
@@ -438,7 +438,7 @@ function TaflBoard(canvas, variant, gameInfo){
 	}
 
 	function checkCaptures(position){
-		console.log(position);
+		//console.log(position);
 		//figure out position color
 		var color;
 		if( (state[position.x][position.y] & PIECE_MASK) === B){

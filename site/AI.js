@@ -19,7 +19,7 @@ function AI(color, searchDepth){
 	//TODO need to clear pieces that are captured
 	//TODO dont include moves that are just transpositions of other available moves
 	//must also check whether this is the king moving or 
-	function getMoves(gameState, color){
+	function getMoves(gameState, color, topLevel){
 		moves = [];
 		//console.log(gameState);
 		//get list of available moves based on current state
@@ -78,6 +78,9 @@ function AI(color, searchDepth){
 				}
 			}
 		}
+		if(topLevel){
+		//	console.log(moves);
+		}
 		return moves;
 	}
 
@@ -112,71 +115,26 @@ function AI(color, searchDepth){
 		
 		//now check captures
 		if(position.x+2 < size && ( (copyState[position.x+2][position.y] & color) > 0 || isSpecialCell(size, position.x+2, position.y)) && (copyState[position.x+1][position.y] & color) === 0){
-			console.log("x+")
+			//console.log("x+")
 			copyState[position.x+1][position.y] = 0;
 		}
 		if(position.x-2 >= 0 && ( (copyState[position.x-2][position.y] & color) > 0 || isSpecialCell(size, position.x-2, position.y)) && (copyState[position.x-1][position.y] & color) === 0){
-			console.log("x-");
+			//console.log("x-");
 			copyState[position.x-1][position.y] = 0;
 		}
 		if(position.y+2 < size && ( (copyState[position.x][position.y+2] & color) > 0 || isSpecialCell(size, position.x, position.y+2)) && (copyState[position.x][position.y+1] & color) === 0){
-			console.log("y+")
+			//console.log("y+")
 			copyState[position.x][position.y+1] = 0;
 		}
 		if(position.y-2 >= 0 && ( (copyState[position.x][position.y-2] & color) > 0 || isSpecialCell(size, position.x, position.y-2)) && (copyState[position.x][position.y-1] & color) === 0){
-			console.log("y-");
+			//console.log("y-");
 			copyState[position.x][position.y-1] = 0;
 		}
 
 		return copyState;
 	}
 
-	function applyCaptures(position){
-		console.log(position);
-		//figure out position color
-		var color;
-		if( (state[position.x][position.y] & PIECE_MASK) === B){
-			color = B;
-		}
-		else if( (state[position.x][position.y] & PIECE_MASK) === W || (state[position.x][position.y] & PIECE_MASK) === K){
-			color = W | K;
-		}
-		else{
-
-			return;//not a valid position to check captures
-		}
-		/*console.log("c: "+color);
-		console.log(state[position.x][position.y]);
-		console.log(state);
-		console.log(position.x-2);
-		console.log(state[position.x-2][position.y]);
-		console.log((state[position.x-2][position.y] & color));
-		console.log((state[position.x-1][position.y] & color));*/
-
-		//now check adjacenct capture zones
-		if(position.x+2 < size && ( (state[position.x+2][position.y] & color) > 0 || isSpecialCell(position.x+2, position.y)) && (state[position.x+1][position.y] & color) === 0){
-			console.log("x+")
-			state[position.x+1][position.y] = 0;
-		}
-		if(position.x-2 >= 0 && ( (state[position.x-2][position.y] & color) > 0 || isSpecialCell(position.x-2, position.y)) && (state[position.x-1][position.y] & color) === 0){
-			console.log("x-");
-			state[position.x-1][position.y] = 0;
-		}
-		if(position.y+2 < size && ( (state[position.x][position.y+2] & color) > 0 || isSpecialCell(position.x, position.y+2)) && (state[position.x][position.y+1] & color) === 0){
-			console.log("y+")
-			state[position.x][position.y+1] = 0;
-		}
-		if(position.y-2 >=  0 && ( (state[position.x][position.y-2] & color) > 0 || isSpecialCell(position.x, position.y-2)) && (state[position.x][position.y-1] & color) === 0){
-			console.log("y-");
-			state[position.x][position.y-1] = 0;
-		}
-
-		//TODO above is done, enforce king in hall rule?
-
-		//TODO check win condition
-		
-	}
-
+	//TODO random is usually between 850 -> 1000 ??????
 	function scoreState(gameState, move, color){
 		//eval game state with heuristics
 		//console.log("scoring state");
@@ -198,12 +156,14 @@ function AI(color, searchDepth){
 
 		var bestScore = {
 			score : 0,
-			move : move
+			move : move,
 		};
 		bestScore.score = color === ourColor ? Number.MIN_SAFE_INTEGER : Number.MAX_SAFE_INTEGER;	//set worst case scores
+		var bestIndex = 0;
+		var scores = [];
 		//var minMaxFunc = color === ourColor ? Math.max : Math.min;
 		var changeColor = color === ourColor ? theirColor : ourColor; 				//get the next levels color
-		var moves = getMoves(gameState, color);
+		var moves = getMoves(gameState, color, level === 0);
 		//console.log(moves.length);
 		for(var i=0; i < moves.length; i++){
 			//console.log("move: "+i);
@@ -214,11 +174,14 @@ function AI(color, searchDepth){
 				changeColor
 			);
 			//console.log(stateScore);
-
+			
+			scores.push(stateScore);
 			if(color == ourColor){
 				
 				if(stateScore.score > bestScore.score){
-					bestScore = stateScore;
+					bestScore.score = stateScore.score;
+					bestScore.move = stateScore.move; 
+					bestIndex = i;
 				}
 				//if this score is greater than the worst case (for me) move of my opponent, I ignore it and return
 				//alpha = Math.max(alpha, stateScore);
@@ -228,7 +191,9 @@ function AI(color, searchDepth){
 				//}
 			}else{
 				if(stateScore.score < bestScore.score){
-					bestScore = stateScore;
+					bestScore.score = stateScore.score;
+					bestScore.move = stateScore.move; 
+					bestIndex = i;
 				}
 				//if this score is better than the worst case (for my opponent) move I ignore it and return
 				//beta = Math.min(beta, stateScore);
@@ -237,6 +202,14 @@ function AI(color, searchDepth){
 				//	return bestScore;
 				//}
 			}
+		}
+		if(level === 0){
+			console.log(moves);
+			console.log(scores);
+			console.log("move ["+bestIndex+"]");
+			console.log(moves[bestIndex]);
+			console.log(bestScore);
+			bestScore.move = moves[bestIndex];
 		}
 		return bestScore;
 	}
