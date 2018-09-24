@@ -146,6 +146,7 @@ function AI(color, searchDepth){
 	}
 
 	//TODO need to pick the top level best move seems to be sending the bottom level move
+	//figured it out, just track bestIndex, set bestScore.move to moves[bestIndex]
 	function minimax_old(gameState, move, level, color){
 		//console.log("level: "+level);
 		//console.log("color: "+color);
@@ -216,6 +217,7 @@ function AI(color, searchDepth){
 
 	//TODO a,b pruning is not delivering the correct moves its seems
 	//same with old algo maybe a,b just exasperates problem
+	//TODO add bestIndex and track it
 	function minimax(gameState, move, level, color, alpha, beta){
 		if(level == searchDepth || isTerminalState(gameState, move)){
 			return scoreState(gameState, move, color); 
@@ -252,6 +254,7 @@ function AI(color, searchDepth){
 					return bestScore;
 				}
 			}
+			if(level === 0){bestScore.move =moves[bestIndex];}
 			return bestScore; //if we reach this all options were on the table no pruning
 		}else{
 			var bestScore = {
@@ -281,6 +284,7 @@ function AI(color, searchDepth){
 					return bestScore;
 				}
 			}
+			if(level === 0){bestScore.move =moves[bestIndex];}
 			return bestScore;
 		}
 	}

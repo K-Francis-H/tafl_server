@@ -286,6 +286,8 @@ function TaflBoard(canvas, variant, gameInfo){
 		clearBoardAnnotations(state);
 		setLastMoveAI(state, move);
 		checkCaptures({x: move.ex, y: move.ey});
+		moveColor = moveColor === "white" ? "black" : "white";
+		setMoveInfo(playerColor, moveColor);
 		self.draw();
 		moveColor = playerColor;
 	}
