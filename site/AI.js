@@ -10,11 +10,13 @@ function AI(color, searchDepth){
 	const ATTACKERS = 0x02;
 	const ourColor = color === "white" ? DEFENDERS : ATTACKERS;
 	const theirColor = ourColor === DEFENDERS ? ATTACKERS : DEFENDERS;
+	console.log(ourColor);
+	console.log(theirColor);
 
 	this.getMove = function(gameState){
 		//run minimax, return a value that the game understands (start sqaure, end sqaure)
 		//console.log(gameState);
-		return minimax(gameState, null, 0, ourColor, Number.MIN_SAFE_INTEGER , Number.MAX_SAFE_INTEGER).move; //TODO invalid moves coming through...
+		return minimax_old(gameState, null, 0, ourColor, Number.MIN_SAFE_INTEGER , Number.MAX_SAFE_INTEGER).move; //TODO invalid moves coming through...
 		//minimax(gameState, null, 0, ourColor);
 	};
 
@@ -141,10 +143,56 @@ function AI(color, searchDepth){
 		//eval game state with heuristics
 		//console.log("scoring state");
 		//just random for now see if we can get it to work
-		var score = getRandomInt(0,1000);
-		console.log("score: "+score);
-		return { score : getRandomInt(0,1000),
+		var score = unisexScore(gameState, move, color)
+		//console.log("score: "+score);
+		return { score : score + getRandomInt(0,10), //fudge
 			 move  : move };
+
+		/*if(color === DEFENDERS){
+
+		}else{//ATTACKERS
+			
+		}*/
+	}
+
+	function unisexScore(gameState, move, color){
+		//TODO
+		//look for captures
+		var sum = 0;
+		var theirColor = color === ATTACKERS ? DEFENDERS : ATTACKERS;
+		console.log(color);
+		console.log(theirColor);
+		//we now occupy move.ex, move.ey
+		if(move.ex - 2 >= 0){
+			if( (gameState[move.ex-2][move.ey] & theirColor) > 0 && (gameState[move.ex-1][move.ey] & color) > 0 ){
+				//up capture
+				console.log("up capture: "+move.sx+" "+move.sy+" "+move.ex+" "+move.ey);
+				sum += 100;
+			}
+		}
+		if(move.ex + 2 < gameState.length){
+			if( (gameState[move.ex+2][move.ey] & theirColor) > 0 && (gameState[move.ex+1][move.ey] & color) > 0 ){
+				//down capture
+				console.log("down capture: "+move.sx+" "+move.sy+" "+move.ex+" "+move.ey);
+				sum += 100;
+			}
+		}
+		if(move.ey - 2 >= 0){
+			if( (gameState[move.ex][move.ey-2] & theirColor) > 0 && (gameState[move.ex][move.ey-1] & color) > 0){
+				//left capture
+				console.log("left capture: "+move.sx+" "+move.sy+" "+move.ex+" "+move.ey);
+				//0 4 1 2
+				sum += 100;
+			}
+		}
+		if(move.ey + 2 < gameState.length){
+			if( (gameState[move.ex][move.ey+2] & theirColor) > 0 && (gameState[move.ex][move.ey+1] & color) > 0){
+				//right capture
+				console.log("right capture: "+move.sx+" "+move.sy+" "+move.ex+" "+move.ey);
+				sum += 100;
+			}
+		}
+		return sum;
 	}
 
 	//TODO need to pick the top level best move seems to be sending the bottom level move
@@ -153,6 +201,7 @@ function AI(color, searchDepth){
 		//console.log("level: "+level);
 		//console.log("color: "+color);
 		//console.log(gameState);
+		
 		if(level == searchDepth || isTerminalState(gameState, move)){
 			return scoreState(gameState, move, color); 
 		}
