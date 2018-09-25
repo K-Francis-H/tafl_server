@@ -14,7 +14,7 @@ function AI(color, searchDepth){
 	this.getMove = function(gameState){
 		//run minimax, return a value that the game understands (start sqaure, end sqaure)
 		//console.log(gameState);
-		return minimax_old(gameState, null, 0, ourColor, Number.MIN_SAFE_INTEGER , Number.MAX_SAFE_INTEGER).move; //TODO invalid moves coming through...
+		return minimax(gameState, null, 0, ourColor, Number.MIN_SAFE_INTEGER , Number.MAX_SAFE_INTEGER).move; //TODO invalid moves coming through...
 		//minimax(gameState, null, 0, ourColor);
 	};
 
@@ -142,7 +142,7 @@ function AI(color, searchDepth){
 		//console.log("scoring state");
 		//just random for now see if we can get it to work
 		var score = getRandomInt(0,1000);
-		//console.log("score: "+score);
+		console.log("score: "+score);
 		return { score : getRandomInt(0,1000),
 			 move  : move };
 	}
@@ -226,6 +226,8 @@ function AI(color, searchDepth){
 		}
 
 		var moves = getMoves(gameState, color);
+		var bestIndex = 0;
+		var changeColor = color === ourColor ? theirColor : ourColor; 
 
 		if(color === ourColor){
 			var bestScore = {
@@ -239,11 +241,16 @@ function AI(color, searchDepth){
 					stateFromMove(gameState, moves[i], color),
 					moves[i],
 					level + 1,
-					theirColor,
+					changeColor,
 					alpha,
 					beta
 				);
-				bestScore = bestScore.score > score.score ? bestScore : score; //Math.max(bestScore.score, score.score);//cause we attach move data making this an object...
+				//bestScore = bestScore.score > score.score ? bestScore : score; //Math.max(bestScore.score, score.score);//cause we attach move data making this an object...
+				if(score.score > bestScore.score){
+					bestScore.score = score.score;
+					bestScore.move = score.move;
+					bestIndex = i;
+				}
 				
 				//console.log("our move: "+alpha+" "+beta);
 				alpha = Math.max(alpha, bestScore.score);
@@ -252,11 +259,20 @@ function AI(color, searchDepth){
 						score : alpha,
 						move : score.move
 					};*/
-					//break;
-					return bestScore;
+					break;
+					//return bestScore;
 				}
 			}
-			if(level === 0){bestScore.move =moves[bestIndex];}
+			console.log(bestScore.move);
+			if(level === 0){
+				console.log(moves);
+				//console.log(scores);
+				console.log("move ["+bestIndex+"]");
+				console.log(moves[bestIndex]);
+				console.log(bestScore);
+				bestScore.move = moves[bestIndex];
+				console.log(bestIndex);
+			}
 			return bestScore; //if we reach this all options were on the table no pruning
 		}else{
 			var bestScore = {
@@ -270,11 +286,16 @@ function AI(color, searchDepth){
 					stateFromMove(gameState, moves[i], color),
 					moves[i],
 					level + 1,
-					ourColor,
+					changeColor,
 					alpha,
 					beta
 				);
 				bestScore = bestScore.score < score.score ? bestScore : score;
+				if(score.score < bestScore.score){
+					bestScore.score = score.score;
+					bestScore.move = score.move;
+					bestIndex = i;
+				}
 				beta = Math.min(beta, bestScore.score);
 				//console.log("their move: "+alpha+" "+beta);
 				if(alpha >= beta){
@@ -282,11 +303,20 @@ function AI(color, searchDepth){
 						score : beta,
 						move : score.move
 					};*/
-					//break;
-					return bestScore;
+					break;
+					//return bestScore;
 				}
 			}
-			if(level === 0){bestScore.move =moves[bestIndex];}
+			console.log(bestScore.move);
+			if(level === 0){
+				console.log(moves);
+				//console.log(scores);
+				console.log("move ["+bestIndex+"]");
+				console.log(moves[bestIndex]);
+				console.log(bestScore);
+				bestScore.move = moves[bestIndex];
+				console.log(bestIndex);
+			}
 			return bestScore;
 		}
 	}
