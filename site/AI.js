@@ -1,5 +1,7 @@
 //TODO functions but ist awfully slow and naively implemented
 //still needs heuristics too
+
+//TODO need to track Kings movement...
 function AI(color, searchDepth){
 
 	const EMPTY_SPACE = 0x00;
@@ -41,7 +43,7 @@ function AI(color, searchDepth){
 					for(var k=i-1; k >= 0; k--){
 						//console.log("kup: "+"k"+k+" j"+j+" "+ gameState[k][j]+" "+EMPTY_SPACE+" "+ (gameState[k][j] == EMPTY_SPACE) );
 						if(evalFunc(gameState, k, j)){
-							moves.push(new Move([i,j], [k,j]));
+							moves.push(new Move([i,j], [k,j], isKing));
 						}else{
 							break;
 						}
@@ -50,7 +52,7 @@ function AI(color, searchDepth){
 					for(var k=i+1; k < gameState.length; k++){
 						//console.log("kdown:"+ gameState[k][j]+" "+EMPTY_SPACE+" "+ (gameState[k][j] == EMPTY_SPACE) );
 						if(evalFunc(gameState, k, j)){
-							moves.push(new Move([i,j], [k,j]));
+							moves.push(new Move([i,j], [k,j], isKing));
 						}else{
 							break;
 						}
@@ -59,7 +61,7 @@ function AI(color, searchDepth){
 					for(var k=j-1; k >= 0; k--){
 						//console.log("kleft: "+i+" "+k+" "+ gameState[i][k]+" "+EMPTY_SPACE+" "+ (gameState[i][k] == EMPTY_SPACE) );
 						if(evalFunc(gameState, i, k)){
-							moves.push(new Move([i,j], [i,k]));
+							moves.push(new Move([i,j], [i,k], isKing));
 						}else{
 							break;
 						}
@@ -68,7 +70,7 @@ function AI(color, searchDepth){
 					for(var k=j+1; k < gameState[i].length; k++){
 						//console.log("kright:"+ gameState[i][k]+" "+EMPTY_SPACE+" "+ (gameState[i][k] == EMPTY_SPACE) );
 						if(evalFunc(gameState, i, k)){
-							moves.push(new Move([i,j], [i,k]));
+							moves.push(new Move([i,j], [i,k], isKing));
 						}else{
 							break;
 						}
@@ -104,7 +106,7 @@ function AI(color, searchDepth){
 		//TODO remove pieces if captured
 		copyState = JSON.parse(JSON.stringify(gameState));
 		copyState[move.sx][move.sy] = EMPTY_SPACE;
-		copyState[move.ex][move.ey] = color;
+		copyState[move.ex][move.ey] = color //TODO not sure if this will break things: move.isKing ? KING : color;
 
 		var position = {
 			x : move.ex,
@@ -295,11 +297,12 @@ function AI(color, searchDepth){
 	//	}
 	//}
 
-	function Move(startCoords, endCoords){
+	function Move(startCoords, endCoords, isKing){
 		this.sx = startCoords[0];
 		this.sy = startCoords[1];
 		this.ex = endCoords[0];
 		this.ey = endCoords[1];
+		this.isKing = isKing;
 	}
 
 	function isTerminalState(gameState, move){

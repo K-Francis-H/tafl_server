@@ -299,7 +299,7 @@ function TaflBoard(canvas, variant, gameInfo){
 		//TODO remove pieces if captured
 		copyState = JSON.parse(JSON.stringify(gameState));
 		copyState[move.sx][move.sy] = 0x00;
-		copyState[move.ex][move.ey] = color;
+		copyState[move.ex][move.ey] = move.isKing ? K : color;
 		//console.log(copyState);
 		return copyState;
 	}
