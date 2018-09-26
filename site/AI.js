@@ -23,7 +23,7 @@ function AI(color, searchDepth){
 	//TODO need to clear pieces that are captured
 	//TODO dont include moves that are just transpositions of other available moves
 	//must also check whether this is the king moving or 
-	function getMoves(gameState, color, topLevel){
+	function getMoves(gameState, color){
 		moves = [];
 		//console.log(gameState);
 		//get list of available moves based on current state
@@ -82,9 +82,6 @@ function AI(color, searchDepth){
 				}
 			}
 		}
-		if(topLevel){
-		//	console.log(moves);
-		}
 		return moves;
 	}
 
@@ -109,7 +106,7 @@ function AI(color, searchDepth){
 		copyState = JSON.parse(JSON.stringify(gameState));
 		copyState[move.sx][move.sy] = EMPTY_SPACE;
 		copyState[move.ex][move.ey] = color //TODO not sure if this will break things: move.isKing ? KING : color;
-
+		var theirColor = color === ATTACKERS ? DEFENDERS : ATTACKERS;
 		var position = {
 			x : move.ex,
 			y : move.ey
@@ -118,24 +115,67 @@ function AI(color, searchDepth){
 		var size = copyState.length;
 		
 		//now check captures
-		if(position.x+2 < size && ( (copyState[position.x+2][position.y] & color) > 0 || isSpecialCell(size, position.x+2, position.y)) && (copyState[position.x+1][position.y] & color) === 0){
+		if(position.x+2 < size && ( (copyState[position.x+2][position.y] & color) > 0 || isSpecialCell(size, position.x+2, position.y)) && (copyState[position.x+1][position.y] & theirColor) > 0){
 			//console.log("x+")
 			copyState[position.x+1][position.y] = 0;
 		}
-		if(position.x-2 >= 0 && ( (copyState[position.x-2][position.y] & color) > 0 || isSpecialCell(size, position.x-2, position.y)) && (copyState[position.x-1][position.y] & color) === 0){
+		if(position.x-2 >= 0 && ( (copyState[position.x-2][position.y] & color) > 0 || isSpecialCell(size, position.x-2, position.y)) && (copyState[position.x-1][position.y] & theirColor) > 0){
 			//console.log("x-");
 			copyState[position.x-1][position.y] = 0;
 		}
-		if(position.y+2 < size && ( (copyState[position.x][position.y+2] & color) > 0 || isSpecialCell(size, position.x, position.y+2)) && (copyState[position.x][position.y+1] & color) === 0){
+		if(position.y+2 < size && ( (copyState[position.x][position.y+2] & color) > 0 || isSpecialCell(size, position.x, position.y+2)) && (copyState[position.x][position.y+1] & theirColor) > 0){
 			//console.log("y+")
 			copyState[position.x][position.y+1] = 0;
 		}
-		if(position.y-2 >= 0 && ( (copyState[position.x][position.y-2] & color) > 0 || isSpecialCell(size, position.x, position.y-2)) && (copyState[position.x][position.y-1] & color) === 0){
+		if(position.y-2 >= 0 && ( (copyState[position.x][position.y-2] & color) > 0 || isSpecialCell(size, position.x, position.y-2)) && (copyState[position.x][position.y-1] & theirColor) > 0){
 			//console.log("y-");
 			copyState[position.x][position.y-1] = 0;
 		}
 
 		return copyState;
+	}
+
+	function isCapture(gameState, move, color){
+		copyState = JSON.parse(JSON.stringify(gameState));
+		copyState[move.sx][move.sy] = EMPTY_SPACE;
+		copyState[move.ex][move.ey] = color //TODO not sure if this will break things: move.isKing ? KING : color;
+		//console.log(color);
+		var theirColor = color === ATTACKERS ? DEFENDERS : ATTACKERS;
+		//console.log(theirColor);
+		console.log("g");
+		console.log(gameState);
+		console.log("c");
+		console.log(copyState);
+		var position = {
+			x : move.ex,
+			y : move.ey
+		};
+		//var state = copyState;
+		var size = copyState.length;
+		
+		//now check captures
+		if(position.x+2 < size && ( (copyState[position.x+2][position.y] & color) > 0 || isSpecialCell(size, position.x+2, position.y)) && (copyState[position.x+1][position.y] & theirColor) > 0){
+			console.log("x+");
+			console.log(move);
+			return true;
+		}
+		if(position.x-2 >= 0 && ( (copyState[position.x-2][position.y] & color) > 0 || isSpecialCell(size, position.x-2, position.y)) && (copyState[position.x-1][position.y] & theirColor) > 0){
+			console.log("x-");
+			console.log(move);
+			return true;
+		}
+		if(position.y+2 < size && ( (copyState[position.x][position.y+2] & color) > 0 || isSpecialCell(size, position.x, position.y+2)) && (copyState[position.x][position.y+1] & theirColor) > 0){
+			console.log("y+");
+			console.log(move);
+			return true;
+		}
+		if(position.y-2 >= 0 && ( (copyState[position.x][position.y-2] & color) > 0 || isSpecialCell(size, position.x, position.y-2)) && (copyState[position.x][position.y-1] & theirColor) > 0){
+			console.log("y-");
+			console.log(move);
+			return true;
+		}
+
+		return false;
 	}
 
 	//TODO random is usually between 850 -> 1000 ??????
@@ -159,39 +199,7 @@ function AI(color, searchDepth){
 		//TODO
 		//look for captures
 		var sum = 0;
-		var theirColor = color === ATTACKERS ? DEFENDERS : ATTACKERS;
-		console.log(color);
-		console.log(theirColor);
-		//we now occupy move.ex, move.ey
-		if(move.ex - 2 >= 0){
-			if( (gameState[move.ex-2][move.ey] & theirColor) > 0 && (gameState[move.ex-1][move.ey] & color) > 0 ){
-				//up capture
-				console.log("up capture: "+move.sx+" "+move.sy+" "+move.ex+" "+move.ey);
-				sum += 100;
-			}
-		}
-		if(move.ex + 2 < gameState.length){
-			if( (gameState[move.ex+2][move.ey] & theirColor) > 0 && (gameState[move.ex+1][move.ey] & color) > 0 ){
-				//down capture
-				console.log("down capture: "+move.sx+" "+move.sy+" "+move.ex+" "+move.ey);
-				sum += 100;
-			}
-		}
-		if(move.ey - 2 >= 0){
-			if( (gameState[move.ex][move.ey-2] & theirColor) > 0 && (gameState[move.ex][move.ey-1] & color) > 0){
-				//left capture
-				console.log("left capture: "+move.sx+" "+move.sy+" "+move.ex+" "+move.ey);
-				//0 4 1 2
-				sum += 100;
-			}
-		}
-		if(move.ey + 2 < gameState.length){
-			if( (gameState[move.ex][move.ey+2] & theirColor) > 0 && (gameState[move.ex][move.ey+1] & color) > 0){
-				//right capture
-				console.log("right capture: "+move.sx+" "+move.sy+" "+move.ex+" "+move.ey);
-				sum += 100;
-			}
-		}
+		sum += isCapture(gameState, move, color) ? 100 : 0; 
 		return sum;
 	}
 
@@ -202,8 +210,9 @@ function AI(color, searchDepth){
 		//console.log("color: "+color);
 		//console.log(gameState);
 		
-		if(level == searchDepth || isTerminalState(gameState, move)){
-			return scoreState(gameState, move, color); 
+		if(level === searchDepth || isTerminalState(gameState, move)){
+			//actually need to score the last teams move, since this is eval depth
+			return scoreState(gameState, move, color === ourColor ? theirColor : ourColor); 
 		}
 
 		var bestScore = {
@@ -215,12 +224,12 @@ function AI(color, searchDepth){
 		var scores = [];
 		//var minMaxFunc = color === ourColor ? Math.max : Math.min;
 		var changeColor = color === ourColor ? theirColor : ourColor; 				//get the next levels color
-		var moves = getMoves(gameState, color, level === 0);
+		var moves = getMoves(gameState, color);
 		//console.log(moves.length);
 		for(var i=0; i < moves.length; i++){
 			//console.log("move: "+i);
 			var stateScore =  minimax_old(
-				stateFromMove(gameState, moves[i], color),
+				gameState,//stateFromMove(gameState, moves[i], color),
 				moves[i],
 				level + 1,
 				changeColor
