@@ -2,7 +2,7 @@
 //still needs heuristics too
 
 //TODO need to track Kings movement...
-function AI(color, searchDepth){
+function AI2(color, searchDepth){
 
 	const EMPTY_SPACE = 0x00;
 	const KING = 0x04;
@@ -266,7 +266,9 @@ function AI(color, searchDepth){
 		return sum;
 	}
 
-	
+	function minimax2(stateChange, level, color){
+		if(level === searchDepth || 
+	}
 
 	//TODO need to pick the top level best move seems to be sending the bottom level move
 	//figured it out, just track bestIndex, set bestScore.move to moves[bestIndex]
@@ -451,13 +453,7 @@ function AI(color, searchDepth){
 	//	}
 	//}
 
-	function Move(startCoords, endCoords, isKing){
-		this.sx = startCoords[0];
-		this.sy = startCoords[1];
-		this.ex = endCoords[0];
-		this.ey = endCoords[1];
-		this.isKing = isKing;
-	}
+	
 
 	function isTerminalState(gameState, move){
 		//check if the king is in a corner

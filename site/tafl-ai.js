@@ -70,13 +70,22 @@ const PIECE_MASK = BLACK_MASK | WHITE_MASK;
 
 //source https://en.wikipedia.org/wiki/Tafl_games
 //attacker 1st
-const BRANDUBH = 
+/*const BRANDUBH = 
 [[0,0,0,B,0,0,0],
  [0,0,0,B,0,0,0],
  [0,0,0,W,0,0,0],
  [B,B,W,K,W,B,B],
  [0,0,0,W,0,0,0],
  [0,0,0,B,0,0,0],
+ [0,0,0,B,0,0,0]];*/
+
+const BRANDUBH = 
+[[0,0,0,B,0,0,0],
+ [0,0,0,0,0,0,0],
+ [0,0,0,0,0,0,0],
+ [B,0,0,K,0,0,B],
+ [0,0,0,0,0,0,0],
+ [0,0,0,0,0,0,0],
  [0,0,0,B,0,0,0]];
 
 //source https://www.boardgamegeek.com/article/2700987
@@ -225,6 +234,7 @@ function TaflBoard(canvas, variant, gameInfo){
 	var aiColor = playerColor === "white" ? "black" : "white";
 	var moveColor = "black";
 
+	//gonna need to update state n order to advance... beyond 1 search depth
 	var ai = new AI(aiColor, 1);//TODO play with search depth to find optimal speed/difficulty
 	//if greater than 1 we sometimes get extra pieces???? examine move generator, applier functions
 	setMoveInfo(playerColor, moveColor); 
@@ -279,17 +289,23 @@ function TaflBoard(canvas, variant, gameInfo){
 		//console.log("pre ai state");
 		//console.log(state);
 		var move = ai.getMove(static_clearBoardAnnotations(state));
-		var stateAI = stateFromMove(state, move, aiColor);
 		//console.log(move);
+		var stateAI = stateFromMove(state, move, aiColor);
+		
 		states.push(state);
 		state = stateAI;
 		clearBoardAnnotations(state);
 		setLastMoveAI(state, move);
 		checkCaptures({x: move.ex, y: move.ey});
 		moveColor = moveColor === "white" ? "black" : "white";
-		setMoveInfo(playerColor, moveColor);
-		self.draw();
-		moveColor = playerColor;
+		var winner = isWinState();
+		if(winner){
+			setGameOver(winner);
+		}else{
+			setMoveInfo(playerColor, moveColor);
+			self.draw();
+			moveColor = playerColor;
+		}
 	}
 
 	//TODO need to use actual evaluation functions this just moves a piece, but does not apply its effects (captures, etc)
@@ -463,19 +479,19 @@ function TaflBoard(canvas, variant, gameInfo){
 
 		//now check adjacenct capture zones
 		if(position.x+2 < size && ( (state[position.x+2][position.y] & color) > 0 || isSpecialCell(position.x+2, position.y)) && (state[position.x+1][position.y] & color) === 0){
-			console.log("x+")
+			//console.log("x+")
 			state[position.x+1][position.y] = 0;
 		}
 		if(position.x-2 >= 0 && ( (state[position.x-2][position.y] & color) > 0 || isSpecialCell(position.x-2, position.y)) && (state[position.x-1][position.y] & color) === 0){
-			console.log("x-");
+			//console.log("x-");
 			state[position.x-1][position.y] = 0;
 		}
 		if(position.y+2 < size && ( (state[position.x][position.y+2] & color) > 0 || isSpecialCell(position.x, position.y+2)) && (state[position.x][position.y+1] & color) === 0){
-			console.log("y+")
+			//console.log("y+")
 			state[position.x][position.y+1] = 0;
 		}
 		if(position.y-2 >=  0 && ( (state[position.x][position.y-2] & color) > 0 || isSpecialCell(position.x, position.y-2)) && (state[position.x][position.y-1] & color) === 0){
-			console.log("y-");
+			//console.log("y-");
 			state[position.x][position.y-1] = 0;
 		}
 
