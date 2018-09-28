@@ -52,6 +52,8 @@ function AI(color, searchDepth){
 								gameState,								
 								new Move([i,j], [k,j], isKing),
 								color));
+						}else if(!isCorner(gameState, k, j) && gameState[k][j] === EMPTY_SPACE){
+							continue;
 						}else{
 							break;
 						}
@@ -64,6 +66,8 @@ function AI(color, searchDepth){
 								gameState,								
 								new Move([i,j], [k,j], isKing),
 								color));
+						}else if(!isCorner(gameState, k, j) && gameState[k][j] === EMPTY_SPACE){
+							continue;
 						}else{
 							break;
 						}
@@ -76,6 +80,8 @@ function AI(color, searchDepth){
 								gameState,
 								new Move([i,j], [i,k], isKing),
 								color));
+						}else if(!isCorner(gameState, i, k) && gameState[k][j] === EMPTY_SPACE){
+							continue;
 						}else{
 							break;
 						}
@@ -88,6 +94,8 @@ function AI(color, searchDepth){
 								gameState,
 								new Move([i,j], [i,k], isKing),
 								color));
+						}else if(!isCorner(gameState, i, k) && gameState[k][j] === EMPTY_SPACE){
+							continue;
 						}else{
 							break;
 						}
@@ -119,18 +127,27 @@ function AI(color, searchDepth){
 
 	function scoreState(stateChange){
 		if(stateChange.isWin()){
-			console.log("is win for: "+stateChange.getColor());
-			console.log(stateChange.getStartState());
-			console.log(stateChange.getMove());
-			return Number.MAX_SAFE_INTEGER;
+			//console.log("is win for: "+stateChange.getColor());
+			//console.log(stateChange.getStartState());
+			//console.log(stateChange.getMove());
+			//return Number.MAX_SAFE_INTEGER;
 		}else{
-			console.log("NOT WINNING MOVE");
-			console.log(stateChange.getMove());
+			//console.log("NOT WINNING MOVE");
+			//console.log(stateChange.getMove());
 		}
 
 		var sum = 0;
-		sum += stateChange.isCapture() ? 100 : 0;
-		sum += 5;//getRandomInt(0,10);
+		if(stateChange.isCapture()){
+			console.log("isCapture()!");
+			console.log(stateChange.getMove());
+			console.log(stateChange.getStartState());
+			sum += 10000;
+		}
+		if(stateChange.isEscape()){
+			console.log("isEscape()!");
+			sum += 1000;
+		}
+		sum += getRandomInt(0,1000);
 
 		return sum;
 	}
@@ -140,9 +157,11 @@ function AI(color, searchDepth){
 		var bestScore = Number.MIN_SAFE_INTEGER;
 		var bestIndex = 0;
 		var changeColor = color === ourColor ? theirColor : ourColor;
+		var alpha = Number.MIN_SAFE_INTEGER;
+		var beta = Number.MAX_SAFE_INTEGER;
 		console.log(moves);
 		for(var i=0; i < moves.length; i++){
-			var score = minimax2(moves[i], 1, changeColor);
+			var score = minimax2(moves[i], 1, changeColor, alpha, beta);
 			if(score > bestScore){
 				bestScore = score;
 				bestIndex = i;
@@ -159,7 +178,7 @@ function AI(color, searchDepth){
 		return moves[bestIndex].getMove();
 	}
 
-	function minimax2(stateChange, level, color){
+	function minimax2(stateChange, level, color, alpha, beta){
 		if(level === searchDepth || stateChange.isGameOver()){
 			return scoreState(stateChange);
 		}
