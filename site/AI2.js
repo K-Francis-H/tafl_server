@@ -26,7 +26,7 @@ function AI(color, searchDepth){
 	//TODO need to clear pieces that are captured
 	//TODO dont include moves that are just transpositions of other available moves
 	//must also check whether this is the king moving or 
-	function getMoves(gameState, color){
+	function getMoves(gameState, color, level){
 		moves = [];
 		//console.log(gameState);
 		//get list of available moves based on current state
@@ -52,7 +52,7 @@ function AI(color, searchDepth){
 								gameState,								
 								new Move([i,j], [k,j], isKing),
 								color));
-						}else if(!isCorner(gameState, k, j) && gameState[k][j] === EMPTY_SPACE){
+						}else if( (gameState[k][j] === EMPTY_SPACE) && isKingsHall(gameState.length, k, j) ){
 							continue;
 						}else{
 							break;
@@ -66,7 +66,7 @@ function AI(color, searchDepth){
 								gameState,								
 								new Move([i,j], [k,j], isKing),
 								color));
-						}else if(!isCorner(gameState, k, j) && gameState[k][j] === EMPTY_SPACE){
+						}else if( (gameState[k][j] === EMPTY_SPACE) && isKingsHall(gameState.length, k, j) ){
 							continue;
 						}else{
 							break;
@@ -80,7 +80,7 @@ function AI(color, searchDepth){
 								gameState,
 								new Move([i,j], [i,k], isKing),
 								color));
-						}else if(!isCorner(gameState, i, k) && gameState[k][j] === EMPTY_SPACE){
+						}else if( (gameState[i][k] === EMPTY_SPACE) && isKingsHall(gameState.length, i, k) ){
 							continue;
 						}else{
 							break;
@@ -94,7 +94,7 @@ function AI(color, searchDepth){
 								gameState,
 								new Move([i,j], [i,k], isKing),
 								color));
-						}else if(!isCorner(gameState, i, k) && gameState[k][j] === EMPTY_SPACE){
+						}else if( (gameState[i][k] === EMPTY_SPACE) && isKingsHall(gameState.length, i, k) ){
 							continue;
 						}else{
 							break;
@@ -105,7 +105,8 @@ function AI(color, searchDepth){
 				}
 			}
 		}
-		//console.log(moves);
+		console.log("moves for color: "+color+" lvl: "+level);
+		console.log(moves.map(function(move){return move.getMove();}));
 		return moves;
 	}
 
@@ -147,21 +148,37 @@ function AI(color, searchDepth){
 			console.log("isEscape()!");
 			sum += 1000;
 		}
+		if(stateChange.isKingNearEscape()){
+			console.log("king edge");
+			sum+= 100000;//sum += 100000;
+		}
+		if(stateChange.isKingEscape()){
+			console.log("king escape");
+			return Number.MAX_SAFE_INTEGER;
+		}
 		sum += getRandomInt(0,1000);
 
 		return sum;
 	}
 
 	function minimaxInit(gameState, color){
-		var moves = getMoves(gameState, color);
+		var moves = getMoves(gameState, color, 0);
 		var bestScore = Number.MIN_SAFE_INTEGER;
 		var bestIndex = 0;
 		var changeColor = color === ourColor ? theirColor : ourColor;
 		var alpha = Number.MIN_SAFE_INTEGER;
 		var beta = Number.MAX_SAFE_INTEGER;
-		console.log(moves);
+		//console.log(moves);
 		for(var i=0; i < moves.length; i++){
+			//short circuit on a win
+			if(moves[i].isWin()){
+				return moves[i].getMove();
+			}
+
 			var score = minimax2(moves[i], 1, changeColor, alpha, beta);
+			console.log(i);
+			console.log(moves[i].getMove());
+			console.log(score);
 			if(score > bestScore){
 				bestScore = score;
 				bestIndex = i;
@@ -178,14 +195,14 @@ function AI(color, searchDepth){
 		return moves[bestIndex].getMove();
 	}
 
-	function minimax2(stateChange, level, color, alpha, beta){
+	function minimax2(stateChange, level, color, alpha, beta){//TODO implement alpha beta
 		if(level === searchDepth || stateChange.isGameOver()){
 			return scoreState(stateChange);
 		}
 
 		//console.log(stateChange);
 		var changeColor = color === ourColor ? theirColor : ourColor;
-		var moves = getMoves(stateChange.getEndState(), color);
+		var moves = getMoves(stateChange.getEndState(), color, level);
 		var bestScore = color === ourColor ? Number.MIN_SAFE_INTEGER : Number.MAX_SAFE_INTEGER;
 		
 		for(var i=0; i < moves.length; i++){

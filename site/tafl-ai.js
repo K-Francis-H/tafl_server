@@ -70,23 +70,23 @@ const PIECE_MASK = BLACK_MASK | WHITE_MASK;
 
 //source https://en.wikipedia.org/wiki/Tafl_games
 //attacker 1st
-/*const BRANDUBH = 
+const BRANDUBH = 
 [[0,0,0,B,0,0,0],
  [0,0,0,B,0,0,0],
  [0,0,0,W,0,0,0],
  [B,B,W,K,W,B,B],
  [0,0,0,W,0,0,0],
  [0,0,0,B,0,0,0],
- [0,0,0,B,0,0,0]];*/
+ [0,0,0,B,0,0,0]];
 
-const BRANDUBH = 
+/*const BRANDUBH = 
 [[0,0,0,B,0,0,0],
  [0,0,0,0,0,0,0],
  [0,0,0,0,0,0,0],
  [B,0,0,K,0,0,B],
  [0,0,0,0,0,0,0],
  [0,0,0,0,0,0,0],
- [0,0,0,B,0,0,0]];
+ [0,0,0,B,0,0,0]];*/
 
 //source https://www.boardgamegeek.com/article/2700987
 //TODO mentions special rule, attackers and defenders cannot passover king's hall
