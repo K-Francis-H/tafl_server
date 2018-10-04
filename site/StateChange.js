@@ -35,11 +35,11 @@ function StateChange(startState, move, color){
 		//console.log("checking win for: "+ourColor);
 		console.log("is win? "+isTerminalStateVar);
 		//console.log(move);
-		return isTerminalStateVar === ourColor;
+		return this.isGameOver() && (isTerminalStateVar === ourColor);
 	}
 
 	this.isEscape = function(){
-		return escapeCapture(startState, move, color);
+		return /*escapesDanger(startState, move, color) &&*/ escapesDanger(endState, move, color);
 	};
 
 	this.getColor = function(){
@@ -85,8 +85,8 @@ function StateChange(startState, move, color){
 			return DEFENDERS;
 		}
 
-		for(var i=0; i < endState.length-1; i++){
-			for(var j=0; j < endState.length-1; j++){
+		for(var i=0; i < endState.length; i++){
+			for(var j=0; j < endState.length; j++){
 				if( (endState[i][j] & KING) > 0){
 					return false;
 				}
@@ -168,7 +168,7 @@ function StateChange(startState, move, color){
 		return copyState;
 	}
 
-	//not sure this is very accurate... works on level 1 though
+	//works
 	function isCapture(gameState, move, color){
 		copyState = JSON.parse(JSON.stringify(gameState));
 		copyState[move.sx][move.sy] = EMPTY_SPACE;
@@ -212,154 +212,114 @@ function StateChange(startState, move, color){
 		return false;
 	}
 
-	//TODO use/fix
-	//probably missing that there are 2 vectors for any capture
-	// _ _ O _
-	// O X _ O
-	// _ _ O _
-	function escapeCapture(gameState, move, color){
-		copyState = JSON.parse(JSON.stringify(gameState));
-		copyState[move.sx][move.sy] = EMPTY_SPACE;
-		copyState[move.ex][move.ey] = color //TODO not sure if this will break things: move.isKing ? KING : color;
+	function escapesDanger(gameState, move, color){
+		//first check if it is CURRENTLY adjacent to at least one enemy/special tile
+		var theirColor = color === ATTACKERS ? DEFENDERS : ATTACKERS;
+		var size = gameState.length-1;
+		
+		var inDanger = false;
+		//check left
+		if(move.ex -1 >= 0 && ( (gameState[move.ex-1][move.ey] & theirColor) > 0 || isSpecialCell(size, move.ex-1, move.ey) ) ){
+			inDanger = checkDanger(gameState, move, color, true, 1);
+		}
+		if(move.ex +1 <= size && ( (gameState[move.ex+1][move.ey] & theirColor) > 0 || isSpecialCell(size, move.ex+1, move.ey) ) ){
+			inDanger = checkDanger(gameState, move, color, true, -1);
+		}
+		if(move.ey -1 >= 0 && ( (gameState[move.ex][move.ey-1] & theirColor) > 0 || isSpecialCell(size, move.ex, move.ey-1) ) ){
+			inDanger = checkDanger(gameState, move, color, false, 1);
+		}
+		if(move.ey +1 <= size && ( (gameState[move.ex][move.ey+1] & theirColor) > 0 || isSpecialCell(size, move.ex, move.ey+1) ) ){
+			inDanger = checkDanger(gameState, move, color, false, -1);
+		}  
 
-		//check if the end movement is out of the way of a capture
-		var sum = 0;
-		//basically check: is there adjacent enemy at start and for each adjacent is there a remote one to finish attack
-		if(move.sx-1 >= 0 && (copyState[move.sx-1][move.sy] & theirColor) > 0){
-			//adjacent enemy to left
-			for(var i=move.sx+2; i < copyState.length; i++){
-				if( (copyState[i][move.sy] & theirColor) > 0){
+		return inDanger;
+	}
+
+	//dangerDiff == offset to open square that can potentially be occupied by enemy
+	function checkDanger(gameState, move, color, isX, dangerDiff){
+		var size = gameState.length-1;
+		var theirColor = color === ATTACKERS ? DEFENDERS : ATTACKERS;
+		if(isX){
+			//check vertical first since its ambivalent
+			var dangerX = move.ex+dangerDiff;
+			for(var i=move.ey-1; i >= 0; i--){
+				if( (gameState[dangerX][i] & theirColor) > 0){
 					return true;
+				}else if( gameState[dangerX][i] !== EMPTY_SPACE){
+					break;
+				}
+			}
+			for(var i=move.ey+1; i <= size; i++){
+				if( (gameState[dangerX][i] & theirColor) > 0){
+					return true;
+				}else if( gameState[dangerX][i] !== EMPTY_SPACE){
+					break;
+				}
+			}
+			//now check the handed side
+			if(dangerX < move.ex){
+				for(var i=dangerX-1; i >= 0; i--){
+					if( (gameState[i][move.ey] & theirColor) > 0){
+						return true;
+					}else if(gameState[i][move.ey] !== EMPTY_SPACE){
+						break;
+					}
+				}
+			}else{
+				for(var i=dangerX+1; i <= size; i++){
+					if( (gameState[i][move.ey] & theirColor) > 0){
+						return true;
+					}else if(gameState[i][move.ey] !== EMPTY_SPACE){
+						break;
+					}
+				}
+			}
+		}else{
+			var dangerY = move.ey+dangerDiff;
+			//check ambivalent horizontal
+			for(var i=move.ex-1; i >= 0; i--){
+				if( (gameState[i][dangerY] & theirColor) > 0){
+					return true;
+				}else if(gameState[i][dangerY] !== EMPTY_SPACE){
+					break;
+				}
+			}
+			for(var i=move.ex+1; i <= size; i++){
+				if( (gameState[i][dangerY] & theirColor) > 0){
+					return true;
+				}else if(gameState[i][dangerY] !== EMPTY_SPACE){
+					break;
+				}
+			}
+
+			//now check handedness
+			if(dangerY < move.ey){
+				for(var i=dangerY-1; i >= 0; i--){
+					if( (gameState[move.ex][i] & theirColor) > 0){
+						return true;
+					}else if(gameState[move.ex][i] !== EMPTY_SPACE){
+						break;
+					}
+				}
+			}else{
+				for(var i=dangerY+1; i<= size; i++){
+					if( (gameState[move.ex][i] & theirColor) > 0){
+						return true;
+					}else if(gameState[move.ex][i] !== EMPTY_SPACE){
+						break;
+					}
 				}
 			}
 		}
-
-		if(move.sx+1 < copyState.length && (copyState[move.sx+1][move.sy] & theirColor) > 0){
-			for(var i=move.sx-2; i >= 0; i--){
-				if( (copyState[i][move.sy] & theirColor) > 0){
-					return true;
-				}
-			}
-		}
-
-		if(move.sy-1 >= 0 && (copyState[move.sx][move.sy-1] & theirColor) > 0){
-			for(var i=move.sy-2; i >= 0; i--){
-				if( (copyState[move.sx][i] & theirColor) > 0){
-					return true;
-				}
-			}
-		}
-
-		if(move.sy+1 < copyState.length && (copyState[move.sx][move.sy+1] & theirColor) > 0){
-			for(var i=move.sy+2; i < copyState.length; i++){
-				if( (copyState[move.sx][i] & theirColor) > 0){
-					return true;
-				}
-			}
-		}
-
 		return false;
-	}
-
-	//TODO
-	function controlsRowOrColumn(gameState, move, color){
-		copyState = JSON.parse(JSON.stringify(gameState));
-		copyState[move.sx][move.sy] = EMPTY_SPACE;
-		copyState[move.ex][move.ey] = color //TODO not sure if this will break things: move.isKing ? KING : color;
-		//console.log(color);
-		
-		//now check row & columns for emptiness
-		/*for(var i=0; i<copyState.size; i++){
-			for(){
-
-			}
-		}*/
-	}
-
-	//actually this is now white win state
-	function kingIsOnEdge(gameState, move, color){
-		
-		/*return  move.isKing &&  
-			move.ex === 0 && move.ey === 0 ||
-			move.ex === 0 && move.ey === gameState.length-1 ||
-			move.ex === gameState.length-1 && move.ey === 0 ||
-			move.ex === gameState.length-1 && move.ey === gameState.length;*/
-		return  move.isKing &&
-			move.ex === 0 ||
-			move.ex === gameState.length-1 ||
-			move.ey === 0 ||
-			move.ey === gameState.length-1;
-	}
-
-	function kingEscape(gameState, move, color){
-		return  move.isKing && 
-			move.ex === 0 && move.ey === 0 ||
-			move.ex === 0 && move.ey === gameState.length-1 ||
-			move.ex === gameState.length-1 && move.ey === 0 ||
-			move.ex === gameState.length-1 && move.ey === gameState.length-1;
-	}
-
-	//send endstates pls
-	//TODO this does NOT cover vertical moves into horizontal attack just "crunch down" moves
-	function kingIsInDanger(gameState, move, color){
-		if(!move.isKing){
-			return false;
-		}
-
-		//find adjacent danger
-		var isPotentialDanger = 0x0;
-		//left danger
-		if( move.ex-1 >= 0 && ( (gameState[move.ex-1][move.ey] & ATTACKERS) > 0) || isSpecialCell(gameState.length-1, move.ex-1, move.ey) ){
-			isPotentialDanger |= 0x01;
-		}
-		if( move.ex+1 < gameState.length && ( (gameState[move.ex+1][move.ey] & ATTACKERS > 0) || isSpecialCell(gameState.length-1, move.ex+1, move.ey) ) ){
-			isPotentialDanger |= 0x02;
-		}
-		if( move.ey-1 >= 0 && ( (gameState[move.ex][move.ey-1] & ATTACKERS > 0) || isSpecialCell(gameState.length-1, move.ex, move.ey-1) ) ){
-			isPotentialDanger |= 0x04;
-		}
-		if( move.ey+1 < gameState.length && ( (gameState[move.ex][move.ey+1] & ATTACKERS > 0) || isSpecialCell(gameState.length-1, move.ex, move.ey+1) ) ){
-			isPotentialDanger |= 0x08;
-		}
-
-		var isInRealDanger = false;
-		if( (isPotentialDanger & 0x01) > 0 && move.ex+1 < gameState.length-2){
-			//check right
-			for(var i=move.ex+1; i < gameState.length-1; i++){
-				if( (gameState[i][move.ey] & ATTACKERS) > 0){
-					return true;
-				}
-			}
-			//check down??
-		}
-		if( (isPotentialDanger & 0x02) > 0 && move.ex-1 > 0){//not >= caus BWB is safe
-			for(var i=move.ex-1; i > 0; i--){
-				if( (gameState[i][move.ey] & ATTACKERS) > 0){
-					return true;
-				}
-			}
-			//check up
-		}
-		if( (isPotentialDanger & 0x04) > 0 && move.ey+1 < gameState.length-2){
-			for(var i=move.ey+1; i > 0; i++){
-				if( (gameState[i][move.ey] & ATTACKERS) > 0){
-					return true;
-				}
-			}
-			//check right
-		}
-		if( (isPotentialDanger & 0x08) > 0 && move.ey-1 > 0){
-			for(var i=move.ex-1; i > 0; i--){
-				if( (gameState[i][move.ey] & ATTACKERS) > 0){
-					return true;
-				}
-			}
-			//check left
-		}
 	}
 
 	function isInDanger(gameState, move, color){
 
+		//first check if move is into adjacency with an enemy
+		//TODO just call escapesDanger with the endState?
+
+		
 	}
 
 	function isCorner(size, i, j){
@@ -376,4 +336,28 @@ function StateChange(startState, move, color){
 	function isSpecialCell(size, x, y){
 		return isKingsHall(size, x, y) || isCorner(size,x, y);
 	}
+
+	//actually this is now white win state
+	function kingIsOnEdge(gameState, move, color){
+		
+		/*return  move.isKing &&  
+			move.ex === 0 && move.ey === 0 ||
+			move.ex === 0 && move.ey === gameState.length-1 ||
+			move.ex === gameState.length-1 && move.ey === 0 ||
+			move.ex === gameState.length-1 && move.ey === gameState.length;*/
+
+		return  move.isKing && (
+			move.ex === 0 ||
+			move.ex === gameState.length-1 ||
+			move.ey === 0 ||
+			move.ey === gameState.length-1);
+	}
+
+	function kingEscape(gameState, move, color){
+		return  move.isKing && 
+			move.ex === 0 && move.ey === 0 ||
+			move.ex === 0 && move.ey === gameState.length-1 ||
+			move.ex === gameState.length-1 && move.ey === 0 ||
+			move.ex === gameState.length-1 && move.ey === gameState.length-1;
+}
 }

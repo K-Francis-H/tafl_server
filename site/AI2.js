@@ -126,12 +126,12 @@ function AI(color, searchDepth){
 		return isKingsHall(size, x, y) || isCorner(size,x, y);
 	}
 
-	function scoreState(stateChange){
+	function scoreState(stateChange, color){
 		if(stateChange.isWin()){
 			//console.log("is win for: "+stateChange.getColor());
 			//console.log(stateChange.getStartState());
 			//console.log(stateChange.getMove());
-			//return Number.MAX_SAFE_INTEGER;
+			return Number.MAX_SAFE_INTEGER;
 		}else{
 			//console.log("NOT WINNING MOVE");
 			//console.log(stateChange.getMove());
@@ -144,18 +144,20 @@ function AI(color, searchDepth){
 			console.log(stateChange.getStartState());
 			sum += 10000;
 		}
-		if(stateChange.isEscape()){
+
+		/*if(stateChange.isEscape()){
 			console.log("isEscape()!");
 			sum += 1000;
-		}
-		if(stateChange.isKingNearEscape()){
+		}*/
+		/*if(stateChange.isKingNearEscape()){
 			console.log("king edge");
-			sum+= 100000;//sum += 100000;
-		}
-		if(stateChange.isKingEscape()){
+			var multiplier = color === DEFENDERS ? -1 : 1; //WTF
+			sum += (multiplier*100000);//sum += 100000;
+		}*/
+		/*if(stateChange.isKingEscape()){
 			console.log("king escape");
 			return Number.MAX_SAFE_INTEGER;
-		}
+		}*/
 		sum += getRandomInt(0,1000);
 
 		return sum;
@@ -171,9 +173,9 @@ function AI(color, searchDepth){
 		//console.log(moves);
 		for(var i=0; i < moves.length; i++){
 			//short circuit on a win
-			if(moves[i].isWin()){
-				return moves[i].getMove();
-			}
+			//if(moves[i].isWin()){
+			//	return moves[i].getMove();
+			//}
 
 			var score = minimax2(moves[i], 1, changeColor, alpha, beta);
 			console.log(i);
@@ -197,7 +199,7 @@ function AI(color, searchDepth){
 
 	function minimax2(stateChange, level, color, alpha, beta){//TODO implement alpha beta
 		if(level === searchDepth || stateChange.isGameOver()){
-			return scoreState(stateChange);
+			return scoreState(stateChange, color);
 		}
 
 		//console.log(stateChange);
