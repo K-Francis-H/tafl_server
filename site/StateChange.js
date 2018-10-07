@@ -54,6 +54,10 @@ function StateChange(startState, move, color){
 		return kingEscape(startState, move, color);
 	};
 
+	this.controlsRowOrCol = function(){
+		return controlsRowOrColumn(startState, move, color);
+	};
+
 	this.isInDanger = function(){
 
 	};
@@ -322,6 +326,20 @@ function StateChange(startState, move, color){
 		
 	}
 
+	function controlsRowOrColumn(gameState, move, color){
+		var clearRow = true;
+		var clearCol = true;
+		for(var i=0; i < gameState.length-1; i++){
+			if(gameState[i][move.ey] !== EMPTY_SPACE){
+				clearRow = false;
+			}
+			if(gameState[move.ex][i] !== EMPTY_SPACE){
+				clearCol = false;
+			}
+		}
+		return clearCol || clearRow;
+	}
+
 	function isCorner(size, i, j){
 		return i === 0 && j === 0 
 		|| i === size-1 && j === 0
@@ -359,5 +377,5 @@ function StateChange(startState, move, color){
 			move.ex === 0 && move.ey === gameState.length-1 ||
 			move.ex === gameState.length-1 && move.ey === 0 ||
 			move.ex === gameState.length-1 && move.ey === gameState.length-1;
-}
+	}
 }

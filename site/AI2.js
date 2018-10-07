@@ -145,6 +145,11 @@ function AI(color, searchDepth){
 			sum += 10000;
 		}
 
+		if(stateChange.controlsRowOrCol()){
+			console.log("controls row or col");
+			sum += stateChange.getMove().isKing ? 10000 : 1000;
+		}
+
 		/*if(stateChange.isEscape()){
 			console.log("isEscape()!");
 			sum += 1000;
