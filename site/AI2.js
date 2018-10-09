@@ -147,23 +147,29 @@ function AI(color, searchDepth){
 
 		if(stateChange.controlsRowOrCol()){
 			console.log("controls row or col");
-			sum += stateChange.getMove().isKing ? 10000 : 1000;
+			sum += stateChange.getMove().isKing ? 1000000 : 1000;
 		}
 
 		/*if(stateChange.isEscape()){
 			console.log("isEscape()!");
 			sum += 1000;
 		}*/
-		/*if(stateChange.isKingNearEscape()){
+		if(stateChange.isCornerControl()){
+			sum += 1000;
+		}
+		if(stateChange.isKingNearEscape()){
 			console.log("king edge");
 			var multiplier = color === DEFENDERS ? -1 : 1; //WTF
 			sum += (multiplier*100000);//sum += 100000;
-		}*/
-		/*if(stateChange.isKingEscape()){
+		}
+		if(stateChange.isKingEscape()){
 			console.log("king escape");
 			return Number.MAX_SAFE_INTEGER;
-		}*/
-		sum += getRandomInt(0,1000);
+		}
+		if(stateChange.isAttackOnKing()){
+			sum += 5000;
+		}
+		sum += getRandomInt(0,100);
 
 		return sum;
 	}
@@ -178,9 +184,9 @@ function AI(color, searchDepth){
 		//console.log(moves);
 		for(var i=0; i < moves.length; i++){
 			//short circuit on a win
-			//if(moves[i].isWin()){
-			//	return moves[i].getMove();
-			//}
+			if(moves[i].isWin()){
+				return moves[i].getMove();
+			}
 
 			var score = minimax2(moves[i], 1, changeColor, alpha, beta);
 			console.log(i);

@@ -62,6 +62,14 @@ function StateChange(startState, move, color){
 
 	};
 
+	this.isCornerControl = function(){
+		return isCornerControlPoint(startState, move, color);
+	};
+	
+	this.isAttackOnKing = function(){
+		return attacksKing(startState, move, color) && color === ATTACKERS;
+	};
+
 	//TODO this cannot accurately select a win for the DEFENDERS
 	//works for attackers
 	function isWinState(state){
@@ -72,7 +80,7 @@ function StateChange(startState, move, color){
 				if(!foundKing){
 					foundKing = (state[i][j] & KING) > 0;
 				}
-				if( (state[i][j] & KING) > 0 && isCorner(i, j)){
+				if( (state[i][j] & KING) > 0 && isCorner(size, i, j)){
 					return DEFENDERS;
 				}
 			}
@@ -246,6 +254,8 @@ function StateChange(startState, move, color){
 		if(isX){
 			//check vertical first since its ambivalent
 			var dangerX = move.ex+dangerDiff;
+			console.log(dangerX);
+			console.log(move);
 			for(var i=move.ey-1; i >= 0; i--){
 				if( (gameState[dangerX][i] & theirColor) > 0){
 					return true;
@@ -326,10 +336,26 @@ function StateChange(startState, move, color){
 		
 	}
 
+	//TODO decent heuristic, needs to know if it prevents escape though...
+	function attacksKing(gameState, move, color){
+		return  (gameState[move.ex][move.ey+1] && gameState[move.ex][move.ey+1] === KING) ||
+			(gameState[move.ex][move.ey-1] && gameState[move.ex][move.ey-1] === KING) ||
+			(gameState[move.ex+1] && gameState[move.ex+1][move.ey] === KING) ||
+			(gameState[move.ex-1] && gameState[move.ex-1][move.ey] === KING);
+	}
+
+	function isCornerControlPoint(gameState, move, color){
+		var cc = gameState.length-2;//cc : control corner
+		return  (move.ex===1 && move.ey===1) ||
+			(move.ex===1 && move.ey===cc) ||
+			(move.ex===cc && move.ey===1) ||
+			(move.ex===cc && move.ey===cc);
+	}
+
 	function controlsRowOrColumn(gameState, move, color){
 		var clearRow = true;
 		var clearCol = true;
-		for(var i=0; i < gameState.length-1; i++){
+		for(var i=0; i < gameState.length; i++){
 			if(gameState[i][move.ey] !== EMPTY_SPACE){
 				clearRow = false;
 			}

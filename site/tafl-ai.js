@@ -235,7 +235,7 @@ function TaflBoard(canvas, variant, gameInfo){
 	var moveColor = "black";
 
 	//gonna need to update state n order to advance... beyond 1 search depth
-	var ai = new AI(aiColor, 1);//TODO play with search depth to find optimal speed/difficulty
+	var ai = new AI(aiColor, 3);//TODO play with search depth to find optimal speed/difficulty
 	//if greater than 1 we sometimes get extra pieces???? examine move generator, applier functions
 	setMoveInfo(playerColor, moveColor); 
 
