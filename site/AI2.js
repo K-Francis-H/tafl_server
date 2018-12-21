@@ -169,6 +169,9 @@ function AI(color, searchDepth){
 		if(stateChange.isAttackOnKing()){
 			sum += 5000;
 		}
+		if(stateChange.blocksKing()){
+			sum += 5000;
+		}
 		sum += getRandomInt(0,100);
 
 		return sum;

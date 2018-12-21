@@ -62,6 +62,10 @@ function StateChange(startState, move, color){
 
 	};
 
+	this.blocksKing = function(){
+		return blocksKingEscape(startState, move, color);
+	}
+
 	this.isCornerControl = function(){
 		return isCornerControlPoint(startState, move, color);
 	};
@@ -247,6 +251,34 @@ function StateChange(startState, move, color){
 		return inDanger;
 	}
 
+	function blocksKingEscape(gameState, move, color){
+		if(color === DEFENDERS){return false;};
+		
+		//is it in the same row or col as the king?
+		//would the king otherwise be able to escape
+		//find king
+		var size = gameState.length-1;
+		var kingPos = {};
+		for(var i=0; i < size; i++){
+			for(var j=0; j < size; j++){
+				if(gameState[i][j] === KING){
+					kingPos.x = i;
+					kingPos.y = j;
+					break;
+				}
+			}
+		}
+
+		//now we know kings pos, are we in same row or col?
+		if(kingPos.x === move.x || kingPos.y === move.y){
+			return true;
+		}
+		return false;
+		//need to know if we are actually blocking or just hanging out next to an intermediate piece
+		//TODO not fully done, but this is fast
+		
+	}
+
 	//dangerDiff == offset to open square that can potentially be occupied by enemy
 	function checkDanger(gameState, move, color, isX, dangerDiff){
 		var size = gameState.length-1;
@@ -256,18 +288,20 @@ function StateChange(startState, move, color){
 			var dangerX = move.ex+dangerDiff;
 			console.log(dangerX);
 			console.log(move);
-			for(var i=move.ey-1; i >= 0; i--){
-				if( (gameState[dangerX][i] & theirColor) > 0){
-					return true;
-				}else if( gameState[dangerX][i] !== EMPTY_SPACE){
-					break;
+			if(dangerX >= 0 && dangerX <= size){
+				for(var i=move.ey-1; i >= 0; i--){
+					if( (gameState[dangerX][i] & theirColor) > 0){
+						return true;
+					}else if( gameState[dangerX][i] !== EMPTY_SPACE){
+						break;
+					}
 				}
-			}
-			for(var i=move.ey+1; i <= size; i++){
-				if( (gameState[dangerX][i] & theirColor) > 0){
-					return true;
-				}else if( gameState[dangerX][i] !== EMPTY_SPACE){
-					break;
+				for(var i=move.ey+1; i <= size; i++){
+					if( (gameState[dangerX][i] & theirColor) > 0){
+						return true;
+					}else if( gameState[dangerX][i] !== EMPTY_SPACE){
+						break;
+					}
 				}
 			}
 			//now check the handed side
@@ -291,21 +325,22 @@ function StateChange(startState, move, color){
 		}else{
 			var dangerY = move.ey+dangerDiff;
 			//check ambivalent horizontal
-			for(var i=move.ex-1; i >= 0; i--){
-				if( (gameState[i][dangerY] & theirColor) > 0){
-					return true;
-				}else if(gameState[i][dangerY] !== EMPTY_SPACE){
-					break;
+			if(dangerY >=0 && dangerY <= size){
+				for(var i=move.ex-1; i >= 0; i--){
+					if( (gameState[i][dangerY] & theirColor) > 0){
+						return true;
+					}else if(gameState[i][dangerY] !== EMPTY_SPACE){
+						break;
+					}
+				}
+				for(var i=move.ex+1; i <= size; i++){
+					if( (gameState[i][dangerY] & theirColor) > 0){
+						return true;
+					}else if(gameState[i][dangerY] !== EMPTY_SPACE){
+						break;
+					}
 				}
 			}
-			for(var i=move.ex+1; i <= size; i++){
-				if( (gameState[i][dangerY] & theirColor) > 0){
-					return true;
-				}else if(gameState[i][dangerY] !== EMPTY_SPACE){
-					break;
-				}
-			}
-
 			//now check handedness
 			if(dangerY < move.ey){
 				for(var i=dangerY-1; i >= 0; i--){

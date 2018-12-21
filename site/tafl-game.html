@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon"/>
 		<meta charset="utf-8">
 		<title>Tafl Games</title>
 		<script src="tafl.js"></script>
@@ -13,8 +14,9 @@
 			<h3 id="to-play"></h3>
 			<div id="game-container">
 				<canvas id="canvas" width=800 height=800></canvas>
-				<h4 id="shre-label" style="display:none">Share Link:</h4>
-				<p id="shareable-join-link"></p>
+				<h4 id="share-label" style="display:none;">Join Link:</h4>
+				<input id="shareable-join-link" readonly style="display:none;"/>
+				<button id="copy-button" style="display:none;">Copy</button>
 			</div>
 		</center>
 	</body>

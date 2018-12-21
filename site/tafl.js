@@ -34,9 +34,16 @@ document.addEventListener("DOMContentLoaded", function(){
 			//create and display join link 
 			if(gameInfo.j != 1){//they were shared, dont show a link
 				var shareLink = document.getElementById("shareable-join-link");
-				shareLink.textContent = window.location.host+"/join/"+gameInfo.gameId;
+				shareLink.style.display="block";
+				shareLink.value = window.location.host+"/join/"+gameInfo.gameId;
 				var label = document.getElementById("share-label");
 				label.style.display="block";
+				var copyButton = document.getElementById("copy-button");
+				copyButton.style.display="block";
+				copyButton.onclick = function(){
+					shareLink.select();
+					document.execCommand("copy");
+				}
 			}
 
 			//set page title
