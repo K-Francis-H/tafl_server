@@ -640,7 +640,7 @@ function TaflBoard(canvas, variant, gameInfo){
 			if( (state[i][y] & PIECE_MASK) === 0 && limitFunc(i, y)){
 					state[i][y] |= VALID_MOVE;
 			}
-			else if(isKingsHall(i,y)){
+			else if( (state[i][y] & PIECE_MASK) === 0 && isKingsHall(i,y)){
 				continue; //allows crossing over the kings hall
 			}
 			else{
@@ -652,7 +652,7 @@ function TaflBoard(canvas, variant, gameInfo){
 			if( (state[i][y] & PIECE_MASK) === 0 && limitFunc(i, y)){
 				state[i][y] |= VALID_MOVE;
 			}
-			else if(isKingsHall(i,y)){
+			else if( (state[i][y] & PIECE_MASK) === 0 && isKingsHall(i,y)){
 				continue;
 			}
 			else{
@@ -664,7 +664,7 @@ function TaflBoard(canvas, variant, gameInfo){
 			if( (state[x][j] & PIECE_MASK) === 0 && limitFunc(x, j)){
 				state[x][j] |= VALID_MOVE;
 			}
-			else if(isKingsHall(x,j)){
+			else if( (state[x][j] & PIECE_MASK) === 0 && isKingsHall(x,j)){
 				continue;
 			}
 			else{
@@ -675,7 +675,7 @@ function TaflBoard(canvas, variant, gameInfo){
 			if( (state[x][j] & PIECE_MASK) === 0 && limitFunc(x, j)){
 				state[x][j] |= VALID_MOVE;
 			}
-			else if(isKingsHall(x,j)){
+			else if( (state[x][j] & PIECE_MASK) === 0 && isKingsHall(x,j)){
 				continue;
 			}
 			else{
