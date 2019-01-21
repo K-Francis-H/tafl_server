@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon"/>
+		<meta charset="utf-8">
+		<title>Tafl Games</title>
+		<script src="todo_TaflBoard.js"></script>
+		<script src="todo_TaflRenderer.js"></script>
+		<script src="todo_TaflBoardEditor.js"></script>
+		<script>
+			document.addEventListener("DOMContentLoaded", function(){
+				//var board = new TaflBoard(TaflBoard.BRANDUBH);
+				//var renderer = new TaflRenderer(document.getElementById("canvas"));
+				//renderer.draw(board);
+				var editor = new TaflBoardEditor(document.getElementById("canvas"), TaflBoard.BRANDUBH);
+				
+			});
+		</script>
+	</head>
+	<body>
+		<a href="/">New Game</a>
+		<center>
+			<h1 id="variant"></h1>
+			<h3 id="playing-as"></h3>
+			<h3 id="to-play"></h3>
+			<div id="game-container">
+				<canvas id="canvas" draggable="true" width=800 height=800></canvas>
+				<h4 id="share-label" style="display:none;">Join Link:</h4>
+				<input id="shareable-join-link" readonly style="display:none;"/>
+				<button id="copy-button" style="display:none;">Copy</button>
+			</div>
+		</center>
+	</body>
+</html>
