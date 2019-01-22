@@ -168,7 +168,10 @@ function TaflBoard(variant, player, rules){
 		//moves.push(move);
 		state[move.ex][move.ey] = state[move.sx][move.sy];
 		state[move.sx][move.sy] = E;
+		checkCaptures(move);
 		moves.push(move);
+		console.log("after");
+		console.log(move);
 		currentPlayer = currentPlayer === B ? W : B;
 	};
 
@@ -184,7 +187,13 @@ function TaflBoard(variant, player, rules){
 		if(move){
 			state[move.sx][move.sy] = state[move.ex][move.ey];
 			state[move.ex][move.ey] = E;
-		} 
+		}
+		if(move.captures){
+			let 
+			for(let i=0; i < move.captures.length; i++){
+				state[move.captures[i].x][move.captures[i].y] = move.captures[i].player;
+			}
+		}
 	};
 
 	//used for TaflBoardEditor.js to facilitate moving pieces arbitrarily
@@ -246,8 +255,39 @@ function TaflBoard(variant, player, rules){
 		return (state[i][j] & K) > 0;
 	}
 
+	//should be called AFTER performing the move on the game state
 	function checkCaptures(move){
 		//TODO use in the makeMove, simulateMove, and undo functions (move needs to store capture metadata in an array)
+		let color = (state[move.ex][move.ey] & PIECE_MASK) === B ? B : WHITE_MASK;
+		//to make sure its not an empty square somehow
+		if( (state[move.ex][move.ey] & PIECE_MASK) === 0){
+			return;
+		}
+
+		move.captures = [];
+
+		let position = {x : move.ex, y : move.ey};
+		//TODO seems to also capture empty spaces, not a huge deal since undo wont affect the board state in this scenario but still 
+		if(position.x+2 < size && ( (state[position.x+2][position.y] & color) > 0 || isSpecialCell(position.x+2, position.y)) && (state[position.x+1][position.y] & color) === 0){
+			console.log("x+");
+			move.captures.push({x : position.x+1, y : position.y, player : state[position.x+1][position.y]});
+			state[position.x+1][position.y] = 0;
+		}
+		if(position.x-2 >= 0 && ( (state[position.x-2][position.y] & color) > 0 || isSpecialCell(position.x-2, position.y)) && (state[position.x-1][position.y] & color) === 0){
+			console.log("x-");
+			move.captures.push({x : position.x-1, y : position.y, player : state[position.x-1][position.y]});
+			state[position.x-1][position.y] = 0;
+		}
+		if(position.y+2 < size && ( (state[position.x][position.y+2] & color) > 0 || isSpecialCell(position.x, position.y+2)) && (state[position.x][position.y+1] & color) === 0){
+			console.log("y+");
+			move.captures.push({x : position.x, y : position.y+1, player : state[position.x][position.y+1]});
+			state[position.x][position.y+1] = 0;
+		}
+		if(position.y-2 >=  0 && ( (state[position.x][position.y-2] & color) > 0 || isSpecialCell(position.x, position.y-2)) && (state[position.x][position.y-1] & color) === 0){
+			console.log("y-");
+			move.captures.push({x : position.x, y : position.y-1, player : state[position.x][position.y-1]});
+			state[position.x][position.y-1] = 0;
+		} 
 	}
 }
 

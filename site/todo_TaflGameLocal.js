@@ -44,7 +44,19 @@ function TaflGameLocal(canvas, /*playerColor,*/ variant /*, opponentType*/){
 		console.log(selectedPiece);
 		console.log((state[tileX][tileY] & VALID_MOVE));
 
-		if( (board.getCurrentPlayer() & (state[tileX][tileY] & PIECE_MASK) ) > 0){
+		let pieceColor;// = (state[tileX][tileY] & WHITE_MASK) > 0 ? W : B;//TODO need actual ternary logic, this allows B to overlap with E
+		console.log("pieceColor: "+pieceColor);
+		console.log("currentPlayer: "+board.getCurrentPlayer());
+		if( (state[tileX][tileY] & WHITE_MASK) > 0){
+			pieceColor = W;
+		}else if( (state[tileX][tileY] & BLACK_MASK) > 0){
+			pieceColor = B;
+		}else{
+			pieceColor = E;
+		}
+
+		//if( (board.getCurrentPlayer() & (state[tileX][tileY] & PIECE_MASK) ) > 0){
+		if( board.getCurrentPlayer() === pieceColor){
 			selectedPiece = {x : tileX, y: tileY};
 		}else if(selectedPiece && (state[tileX][tileY] & VALID_MOVE) > 0){
 			board.makeMove({
