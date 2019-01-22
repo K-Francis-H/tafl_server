@@ -257,7 +257,7 @@ function TaflBoard(variant, player, rules){
 
 	//should be called AFTER performing the move on the game state
 	function checkCaptures(move){
-		//TODO use in the makeMove, simulateMove, and undo functions (move needs to store capture metadata in an array)
+		//TODO use in the (done)makeMove, simulateMove, and (done)undo functions (move needs to store capture metadata in an array)
 		let color = (state[move.ex][move.ey] & PIECE_MASK) === B ? B : WHITE_MASK;
 		//to make sure its not an empty square somehow
 		if( (state[move.ex][move.ey] & PIECE_MASK) === 0){

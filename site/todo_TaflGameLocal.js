@@ -27,6 +27,7 @@ function TaflGameLocal(canvas, /*playerColor,*/ variant /*, opponentType*/){
 	//playerColor = playerColor || B;
 
 	//local game handler
+	//TODO add indicators for the current player, win state
 	canvas.onclick = function(event){
 		let x = event.pageX - offset(canvas).left;
 		let y = event.pageY - offset(canvas).top;
@@ -36,17 +37,8 @@ function TaflGameLocal(canvas, /*playerColor,*/ variant /*, opponentType*/){
 
 		let state = board.getAnnotatedBoard(selectedPiece);
 
-		//if(selectedPiece){//TODO get this info from the baord? reexamine separation of concerns
-		//	selectedPiece = null;
-		//}
+		let pieceColor;
 
-		console.log(state);
-		console.log(selectedPiece);
-		console.log((state[tileX][tileY] & VALID_MOVE));
-
-		let pieceColor;// = (state[tileX][tileY] & WHITE_MASK) > 0 ? W : B;//TODO need actual ternary logic, this allows B to overlap with E
-		console.log("pieceColor: "+pieceColor);
-		console.log("currentPlayer: "+board.getCurrentPlayer());
 		if( (state[tileX][tileY] & WHITE_MASK) > 0){
 			pieceColor = W;
 		}else if( (state[tileX][tileY] & BLACK_MASK) > 0){
@@ -55,8 +47,13 @@ function TaflGameLocal(canvas, /*playerColor,*/ variant /*, opponentType*/){
 			pieceColor = E;
 		}
 
-		//if( (board.getCurrentPlayer() & (state[tileX][tileY] & PIECE_MASK) ) > 0){
-		if( board.getCurrentPlayer() === pieceColor){
+		console.log("tx: "+tileX+" ty: "+tileY);
+		console.log(selectedPiece);
+		console.log(selectedPiece && tileX === selectedPiece.x && tileY === selectedPiece.y);
+
+		if(selectedPiece && tileX === selectedPiece.x && tileY === selectedPiece.y){
+			selectedPiece = null;
+		}else if( board.getCurrentPlayer() === pieceColor){
 			selectedPiece = {x : tileX, y: tileY};
 		}else if(selectedPiece && (state[tileX][tileY] & VALID_MOVE) > 0){
 			board.makeMove({
@@ -67,7 +64,11 @@ function TaflGameLocal(canvas, /*playerColor,*/ variant /*, opponentType*/){
 				player : board.getCurrentPlayer()
 			});
 			selectedPiece = null;
+		}else{
+			selectedPiece = null;
 		}
+
+		
 		//otherwise ignore
 		renderer.draw(board, selectedPiece);
 	}
