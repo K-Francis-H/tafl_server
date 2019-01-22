@@ -13,17 +13,9 @@ function TaflBoardEditor(canvas, variant){
 
 	renderer.draw(board);
 
-	/*canvas.onclick = function(event){
-		let x = event.pageX - offset(canvas).left;
-		let y = event.pageY - offset(canvas).top;
-
-		var tileX = Math.floor(x / Math.floor(width/size));
-		var tileY = Math.floor(y / Math.floor(height/size));
-
-		let state = board.getBoard();
-
-		renderer.draw(board);
-	};*/
+	this.exportFEN = function(){
+		//TODO write a spec for this based on
+	};
 
 	var selectedPiece = 0;
 	canvas.addEventListener("mousedown", function(event){
