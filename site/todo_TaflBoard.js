@@ -20,9 +20,12 @@ function TaflBoard(variant, player, rules){
 
 	var state = variant;
 	var moves = [];
+	var size = variant.length;
 
 	var moveCount = 0;
 	var currentPlayer = player || B; //black traditionally goes first, but this may be a simulated move
+
+	//var selectedPiece = null;
 
 	this.getMoves = function(player){
 		if(player != W && player != B){
@@ -41,29 +44,61 @@ function TaflBoard(variant, player, rules){
 		return moves;
 	};
 
-	this.getMovesForSelectedPiece = function(i,j,player){
-		return getMovesForPieceAtPosition(i,j,player);
+	//this.getMovesForSelectedPiece = function(i,j){
+	//	return getMovesForPieceAtPosition(i,j);
+	//};
+
+	/*this.setSelectedPiece(selPiece){
+		selectedPiece = selPiece;
 	};
 
+	this.getSelectedPiece(selPiece){
+		return selectedPiece;
+	};*/
+
+	this.getAnnotatedBoard = function(selectedPiece){
+		let annoState = JSON.parse(JSON.stringify(state));
+		let lm = lastMove();
+		if(lm){//apply last state annotations
+			annoState[lm.sx][lm.sy] |= LAST_MOVE;
+			annoState[lm.ex][lm.ey] |= LAST_MOVE;
+		}
+		if(selectedPiece){//apply selected piece and show available moves
+			annoState[selectedPiece.x][selectedPiece.y] |= SELECTED;
+			let availableMoves = getMovesForPieceAtPosition(selectedPiece.x,selectedPiece.y);
+			//console.log(availableMoves);
+			for(let i=0; i < availableMoves.length; i++){
+				let move = availableMoves[i];
+				annoState[move.ex][move.ey] |= VALID_MOVE;
+			} 
+		}
+		//console.log(annoState);
+		return annoState;
+	}
+
 	function Move(sx, sy, ex, ey, player){
-		this.start = {x:sx,y:sy};
-		this.end = {x:ex,y:ey};
+		//this.start = {x:sx,y:sy};
+		//this.end = {x:ex,y:ey};
+		this.sx = sx;
+		this.sy = sy;
+		this.ex = ex;
+		this.ey = ey;
 		this.player = player; //TODO may be inferrable from board state
 	};
 
-	function getMovesForPieceAtPosition(i, j, player){
-		if(isKing(i,j)){
-			return getMovesForKingAtPosition(i,j);
-		}
+	function getMovesForPieceAtPosition(i, j, player){ //think its inferrable
 
 		let isK = isKing(i,j);
 		let limitFunc = function(x,y){
-			//king may only leave the knigs hall, never enter, all others cannot ever be in any special square
-			return (isK && !isKingsHall(x,y)) || !isSpecialCell(x,y); 
+			//king may only leave the kings hall, never enter, all others cannot ever be in any special square
+			return isK || !isSpecialCell(x,y);//(isK && !isKingsHall(x,y)) || !isSpecialCell(x,y); 
 		};
 
+		player = isK ? W : state[i][j] & PIECE_MASK;
+
 		let pieceMoves = [];
-		for(let k=i; k < state.length; k++){
+		for(let k=i+1; k < state.length; k++){
+
 			if((state[k][j] & PIECE_MASK) === 0 && limitFunc(k,j)){
 				pieceMoves.push(new Move(i,j,k,j,player));
 			}
@@ -74,7 +109,8 @@ function TaflBoard(variant, player, rules){
 				break; //impeded by another piece
 			}
 		}
-		for(let k=i; k >=0; k--){
+		for(let k=i-1; k >=0; k--){
+
 			if((state[k][j] & PIECE_MASK) === 0 && limitFunc(k,j)){
 				pieceMoves.push(new Move(i,j,k,j,player));
 			}
@@ -85,9 +121,10 @@ function TaflBoard(variant, player, rules){
 				break; //impeded by another piece
 			}
 		}
-		for(let k=j; k < state.length; k++){
+		for(let k=j+1; k < state.length; k++){
+
 			if((state[i][k] & PIECE_MASK) === 0 && limitFunc(i,k)){
-				pieceMoves.push(new Move(i,j,k,j,player));
+				pieceMoves.push(new Move(i,j,i,k,player));
 			}
 			else if((state[i][k] & PIECE_MASK) === 0 && isKingsHall(i,k)){
 				continue; //may pass over if it was empty
@@ -96,9 +133,10 @@ function TaflBoard(variant, player, rules){
 				break; //impeded by another piece
 			}
 		}
-		for(let k=j; k >=0; k--){
+		for(let k=j-1; k >=0; k--){
+
 			if((state[i][k] & PIECE_MASK) === 0 && limitFunc(i,k)){
-				pieceMoves.push(new Move(i,j,k,j,player));
+				pieceMoves.push(new Move(i,j,i,k,player));
 			}
 			else if((state[i][k] & PIECE_MASK) === 0 && isKingsHall(i,k)){
 				continue; //may pass over if it was empty
@@ -121,12 +159,17 @@ function TaflBoard(variant, player, rules){
 
 	//to actually perform a move and effect the state stack
 	this.makeMove = function(move){
-		//check if move is valid
-		
+		//TODO check if move is valid
+		console.log("making move: ");
+		console.log(move);
 
 		//then apply
 		//applyMove(state, move);
 		//moves.push(move);
+		state[move.ex][move.ey] = state[move.sx][move.sy];
+		state[move.sx][move.sy] = E;
+		moves.push(move);
+		currentPlayer = currentPlayer === B ? W : B;
 	};
 
 	this.undo = function(){
@@ -135,7 +178,13 @@ function TaflBoard(variant, player, rules){
 		//moves.pop();
 		//TODO have to be able to handle whos requesting 
 			//current player -> have to undo opponents move and current move before that (whole turn)
-			//next player -> only remove the last move and return control to the next player 
+			//next player -> only remove the last move and return control to the next player
+
+		let move = moves.pop();
+		if(move){
+			state[move.sx][move.sy] = state[move.ex][move.ey];
+			state[move.ex][move.ey] = E;
+		} 
 	};
 
 	//used for TaflBoardEditor.js to facilitate moving pieces arbitrarily
@@ -195,6 +244,10 @@ function TaflBoard(variant, player, rules){
 
 	function isKing(i,j){
 		return (state[i][j] & K) > 0;
+	}
+
+	function checkCaptures(move){
+		//TODO use in the makeMove, simulateMove, and undo functions (move needs to store capture metadata in an array)
 	}
 }
 

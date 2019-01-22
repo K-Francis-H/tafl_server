@@ -5,6 +5,13 @@ function TaflRenderer(canvas, humanPlayerColor){
 	const BLACK = "#000";
 	const WHITE = "#FFF";
 
+	const SELECTED_DARK = "#646d40";
+	const SELECTED_LIGHT = "#819669";
+	const AVAILABLE_MOVE_LIGHT = "#adb187";
+	const AVAILABLE_MOVE_DARK = "#84794e";
+	const LAST_MOVE_DARK = "#aba23a";
+	const LAST_MOVE_LIGHT = "#ced26b";
+
 	const E = 0x00;//empty
 	const W = 0x01;//white (defenders)
 	const B = 0x02;//black (attackers)
@@ -28,14 +35,12 @@ function TaflRenderer(canvas, humanPlayerColor){
 
 	var self = this;
 
-	var selectedPiece = null;
-
-	this.draw = function(taflBoard){
+	this.draw = function(taflBoard, /*nullable*/ selectedPiece){
 		clear();
 	
 		//get last move
 		//get annotations if piece is selected
-		let state = taflBoard.getBoard();
+		let state = taflBoard.getAnnotatedBoard(selectedPiece);
 
 		let size = state.length;
 		let tileSizeX = width/size;
@@ -46,20 +51,28 @@ function TaflRenderer(canvas, humanPlayerColor){
 			for(var j=0; j < state[i].length; j++){
 				if(isSpecialCell(state, i, j)){
 					ctx.fillStyle = YELLOW;
+				}else if( (state[i][j] & SELECTED) > 0){
+					ctx.fillStyle = lastStyle === BLACK ? SELECTED_DARK : SELECTED_LIGHT;
+				}else if( (state[i][j] & LAST_MOVE) > 0){
+					ctx.fillStyle = lastStyle === BLACK ? LAST_MOVE_DARK : LAST_MOVE_LIGHT;
 				}else{
 					ctx.fillStyle = lastStyle;
 				}
 				ctx.fillRect(i*tileSizeX, j*tileSizeY, tileSizeX, tileSizeY);
-				//TODO figure out how to do annotations
+
+				if( (state[i][j] & VALID_MOVE) > 0){
+					let style = lastStyle === BLACK ? AVAILABLE_MOVE_DARK : AVAILABLE_MOVE_LIGHT;
+					drawAvailableMove(i*tileSizeX, j*tileSizeY, tileSizeX, tileSizeY, style);
+				}
 				lastStyle = lastStyle === DARK ? LIGHT : DARK;
 			}
 		}
 		//draw annotations now
-		if(selectedPiece){
-
-		}
+		//use | to figure out annotations. wings in the morning!
 		drawPieces(state);
 	};
+
+	
 
 	function clear(){
 		ctx.fillStyle = "rgba(255,255,255,0)";//"#FFF";
@@ -127,6 +140,16 @@ function TaflRenderer(canvas, humanPlayerColor){
 		ctx.stroke();
 		
 		
+	}
+
+	function drawAvailableMove(x, y, width, height, style){
+		var cx = x + width*0.5;
+		var cy = y + height*0.5;
+		var radius = width*0.1;
+		ctx.fillStyle = style;
+		ctx.beginPath();
+		ctx.arc(cx, cy, radius, 0, Math.PI*2);
+		ctx.fill();
 	}
 
 	//TODO maybe externalize this
