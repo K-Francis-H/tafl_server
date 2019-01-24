@@ -163,6 +163,10 @@ function TaflBoard(variant, player, rules){
 		console.log("making move: ");
 		console.log(move);
 
+		if(isGameOver()){
+			return;
+		}
+
 		//then apply
 		//applyMove(state, move);
 		//moves.push(move);
@@ -223,7 +227,7 @@ function TaflBoard(variant, player, rules){
 
 	//returns W if defenders one, B if attackers one, -1 (still truthy) if a stalemate, and 0 (cuz its falsy) if the game has not finished
 	this.isGameOver = function(){
-
+		return isGameOver();
 	};
 
 	this.getBoard = function(){
@@ -280,7 +284,7 @@ function TaflBoard(variant, player, rules){
 			move.captures.push({x : position.x+1, y : position.y, player : state[position.x+1][position.y]});
 			state[position.x+1][position.y] = 0;
 		}
-		if(position.x-2 >= 0 && (state[position.x-1][position.y] & color) === 0 && ( ( (state[position.x+2][position.y] & PIECE_MASK) === 0 && isKingsHall(position.x-2,position.y) || isCorner(position.x-2,position.y) ) || (state[position.x-2][position.y] & color) > 0) ){
+		if(position.x-2 >= 0 && (state[position.x-1][position.y] & color) === 0 && ( ( (state[position.x-2][position.y] & PIECE_MASK) === 0 && isKingsHall(position.x-2,position.y) || isCorner(position.x-2,position.y) ) || (state[position.x-2][position.y] & color) > 0) ){
 			console.log("x-");
 			move.captures.push({x : position.x-1, y : position.y, player : state[position.x-1][position.y]});
 			state[position.x-1][position.y] = 0;
@@ -295,6 +299,32 @@ function TaflBoard(variant, player, rules){
 			move.captures.push({x : position.x, y : position.y-1, player : state[position.x][position.y-1]});
 			state[position.x][position.y-1] = 0;
 		} 
+	}
+
+	function isGameOver(){
+		//TODO check if stale
+
+		//check if king is on corner
+		let end = state.length-1;
+		if( (state[0][0] & PIECE_MASK) === K 
+		||  (state[0][end] & PIECE_MASK) === K
+		||  (state[end][0] & PIECE_MASK) === K
+		||  (state[end][end] & PIECE_MASK) === K){
+			return W;
+		}
+
+		//check if king is gone -> attackers win
+		for(let i=0; i < state.length; i++){
+			for(let j=0; j < state.length; j++){
+				if(state[i][j] === K){
+					return E; //king stil in play, no winner
+				}
+			}
+		}
+		//TODO what if white has no moves?
+
+		//black wins, king is gone
+		return B;
 	}
 }
 

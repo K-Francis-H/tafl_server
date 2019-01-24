@@ -29,6 +29,13 @@ function TaflGameLocal(canvas, /*playerColor,*/ variant /*, opponentType*/){
 	//local game handler
 	//TODO add indicators for the current player, win state
 	canvas.onclick = function(event){
+
+		let winner = board.isGameOver()
+		if(winner){
+			console.log(winner+" wins");
+			return;
+		}
+
 		let x = event.pageX - offset(canvas).left;
 		let y = event.pageY - offset(canvas).top;
 
@@ -64,6 +71,7 @@ function TaflGameLocal(canvas, /*playerColor,*/ variant /*, opponentType*/){
 				player : board.getCurrentPlayer()
 			});
 			selectedPiece = null;
+			//TODO logic for determining if the game is over/won
 		}else{
 			selectedPiece = null;
 		}
