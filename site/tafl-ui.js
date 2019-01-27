@@ -118,4 +118,8 @@ document.addEventListener("DOMContentLoaded", function(){
 		window.open("/tafl-game-lai.html?playerColor="+color+"&variant="+variant);
 	}
 
+	function createLocalGame(variant){
+		window.open("/local-game.html?variant="+variant);
+	}
+
 });

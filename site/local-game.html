@@ -13,7 +13,15 @@
 				//var renderer = new TaflRenderer(document.getElementById("canvas"));
 				//renderer.draw(board);
 				//var editor = new TaflBoardEditor(document.getElementById("canvas"), TaflBoard.BRANDUBH);
-				var localGame = new TaflGameLocal(document.getElementById("canvas"), TaflBoard.BRANDUBH);
+				var url = new URL(document.URL);
+				var variant = url.searchParams.get("variant");
+				if(variant){
+					variant = variant.toUpperCase();
+					var localGame = new TaflGameLocal(document.getElementById("canvas"), TaflBoard[variant]);
+				}else{
+					//TODO bad...
+					//redirect to main page?
+				}
 			});
 		</script>
 	</head>
