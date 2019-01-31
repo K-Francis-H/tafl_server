@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon"/>
+		<meta charset="utf-8">
+		<title>Tafl Games</title>
+		<script src="todo_TaflBoard.js"></script>
+		<script src="todo_TaflRenderer.js"></script>
+		<script src="todo_TaflGameNetwork.js"></script>
+		<script>
+			document.addEventListener("DOMContentLoaded", function(){
+				//var board = new TaflBoard(TaflBoard.BRANDUBH);
+				//var renderer = new TaflRenderer(document.getElementById("canvas"));
+				//renderer.draw(board);
+				//var editor = new TaflBoardEditor(document.getElementById("canvas"), TaflBoard.BRANDUBH);
+
+				//TODO get gameId playerId from url
+				var url = new URL(document.URL);
+				var gameId = url.searchParams.get("gameId");
+				var playerId = url.searchParams.get("playerId");
+				var isJoining = url.searchParams.get("j");
+				console.log("gameId: "+gameId);
+				console.log("playerId: "+playerId);
+				var localGame = new TaflGameNetwork(document.getElementById("canvas"), gameId, playerId);
+				if(!isJoining){
+					var shareLink = document.getElementById("shareable-join-link");
+					shareLink.style.display="block";
+					shareLink.value = window.location.host+"/join/"+gameId;
+					var label = document.getElementById("share-label");
+					label.style.display="block";
+					var copyButton = document.getElementById("copy-button");
+					copyButton.style.display="block";
+					copyButton.onclick = function(){
+						shareLink.select();
+						document.execCommand("copy");
+					}
+				}
+			});
+		</script>
+	</head>
+	<body>
+		<a href="/">New Game</a>
+		<center>
+			<h1 id="variant"></h1>
+			<h3 id="playing-as"></h3>
+			<h3 id="to-play"></h3>
+			<div id="game-container">
+				<canvas id="canvas" draggable="true" width=800 height=800></canvas>
+				<h4 id="share-label" style="display:none;">Join Link:</h4>
+				<input id="shareable-join-link" readonly style="display:none;"/>
+				<button id="copy-button" style="display:none;">Copy</button>
+			</div>
+		</center>
+	</body>
+</html>
