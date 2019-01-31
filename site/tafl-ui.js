@@ -35,6 +35,10 @@ document.addEventListener("DOMContentLoaded", function(){
 			opponent = opponentSelect[0].value;
 		}else if(opponentSelect[1].checked){
 			opponent = opponentSelect[1].value;
+		}else if(opponentSelect[2].checked){
+			opponent = opponentSelect[2].value;
+		}else if(opponentSelect[3].checked){
+			opponent = opponentSelect[3].value;
 		}else{
 			console.log("No selected opponent!!!");
 			return;
@@ -53,8 +57,8 @@ document.addEventListener("DOMContentLoaded", function(){
 		else if(colorSel[2].checked){//random
 			var index = Math.floor(Math.random() * (2));//choose 0 or 1 (black or white)
 			color = colorSel[index].value;
-		} 
-		else{
+		}
+		else if(opponent !== "edit"){
 			console.log("No selected color. Aborting game creation...");
 			//TODO alert user
 			return;
@@ -81,6 +85,10 @@ document.addEventListener("DOMContentLoaded", function(){
 		//ask server to create game
 		if(opponent === "ai"){
 			createLocalAIGame(color, variant);
+		}else if(opponent === "local"){
+			createLocalGame(variant);
+		}else if(opponent === "edit"){
+			createBoardEditSession(variant);
 		}else{
 			createGame(color, variant);
 		}
@@ -104,7 +112,7 @@ document.addEventListener("DOMContentLoaded", function(){
 				var playerId = json.playerId;
 				console.log(ajax.responseText);
 				//window.open("/game/"+gameId+"/"+playerId, "_self");
-				window.open("/tafl-game.html?gameId="+gameId+"&playerId="+playerId, "_self");
+				window.open("/network-game.html?gameId="+gameId+"&playerId="+playerId, "_self");
 			}
 		};
 		ajax.send(JSON.stringify({
@@ -120,6 +128,10 @@ document.addEventListener("DOMContentLoaded", function(){
 
 	function createLocalGame(variant){
 		window.open("/local-game.html?variant="+variant);
+	}
+
+	function createBoardEditSession(variant){
+		window.open("/tafl-board-editor.html?variant="+variant);
 	}
 
 });
