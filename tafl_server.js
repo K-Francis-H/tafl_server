@@ -70,7 +70,7 @@ app.get("/game/:gameId/:playerId", function(req, res){
 });
 
 app.post("/move/:gameId/:playerId", function(req, res){
-	var success = game.move(req.params.gameId, req.params.playerId, req.body.token, req.body.state);
+	var success = game.move(req.params.gameId, req.params.playerId, req.body.token, req.body.move);
 	if(success){
 		res.sendStatus(200);
 	}else{

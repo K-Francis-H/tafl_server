@@ -115,7 +115,7 @@ function TaflGameNetwork(canvas, /*playerColor,*/  /*, opponentType*/ gameId, pl
 			selectedPiece = null;
 
 			//TODO add logic here for setting the move on the server
-			setMove(gameInfo.gameId, gameInfo.playerId, gameInfo.moveToken, board.getAnnotatedBoard(), setMoveCallback);
+			setMove(gameInfo.gameId, gameInfo.playerId, gameInfo.moveToken, board.getLastMove(), setMoveCallback);
 
 		}else{//your selecting an empty space that you cannot move to
 			selectedPiece = null; //deselect your piece
@@ -152,7 +152,7 @@ function TaflGameNetwork(canvas, /*playerColor,*/  /*, opponentType*/ gameId, pl
 
 	//tells the server the moves we make
 	//change the server to make a move stack and generate current state
-	function setMove(gameId, playerId, token, state, callback){
+	function setMove(gameId, playerId, token, move, callback){
 		console.log("pid2 : "+playerId);
 		var ajax = new XMLHttpRequest();
 		ajax.open("POST", "/move/"+gameId+"/"+playerId, true);
@@ -169,7 +169,7 @@ function TaflGameNetwork(canvas, /*playerColor,*/  /*, opponentType*/ gameId, pl
 		};
 		ajax.send(JSON.stringify({
 			token : token,
-			state : state
+			move : move
 		}));
 	}
 
