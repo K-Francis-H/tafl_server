@@ -14,6 +14,17 @@
 				//renderer.draw(board);
 				//var editor = new TaflBoardEditor(document.getElementById("canvas"), TaflBoard.BRANDUBH);
 
+				function uiUpdater(status){
+					document.getElementById("variant").innerText = status.variant;
+					if(!status.isGameOver){
+						document.getElementById("playing-as").innerText = "Playing as "+status.playerColor;
+						document.getElementById("to-play").innerText = status.moveColor+" to play";
+					}else{
+						document.getElementById("playing-as").innerText = "Playing as "+status.playerColor;
+						document.getElementById("to-play").innerText = status.winColor+" wins!";
+					}
+				}
+
 				//TODO get gameId playerId from url
 				var url = new URL(document.URL);
 				var gameId = url.searchParams.get("gameId");
@@ -21,7 +32,8 @@
 				var isJoining = url.searchParams.get("j");
 				console.log("gameId: "+gameId);
 				console.log("playerId: "+playerId);
-				var localGame = new TaflGameNetwork(document.getElementById("canvas"), gameId, playerId);
+				var localGame = new TaflGameNetwork(document.getElementById("canvas"), gameId, playerId, uiUpdater);
+				
 				if(!isJoining){
 					var shareLink = document.getElementById("shareable-join-link");
 					shareLink.style.display="block";
@@ -35,6 +47,8 @@
 						document.execCommand("copy");
 					}
 				}
+
+				
 			});
 		</script>
 	</head>

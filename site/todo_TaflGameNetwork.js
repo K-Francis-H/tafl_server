@@ -1,4 +1,4 @@
-function TaflGameNetwork(canvas, /*playerColor,*/  /*, opponentType*/ gameId, playerId, joined){
+function TaflGameNetwork(canvas, /*playerColor,*/  /*, opponentType*/ gameId, playerId, uiUpdateCallback){
 	const E = 0x00;//empty
 	const W = 0x01;//white (defenders)
 	const B = 0x02;//black (attackers)
@@ -43,27 +43,36 @@ function TaflGameNetwork(canvas, /*playerColor,*/  /*, opponentType*/ gameId, pl
 			if(status.token){
 				gameInfo.moveToken = status.token;
 			}
-			gameInfo.move = gameInfo.move;
-			gameInfo.color = gameInfo.color;
-
-			//TODO logic for determining if this person was shared to the game
-			if(joined){
-				//TODO hide some html stuff... maybe have this done in the html script
-			}
-
-			//TODO set title with state.variant text
+			gameInfo.move = status.move;
+			gameInfo.color = status.color;
 
 			console.log(status);
-			board = new TaflBoard(status.state);
+			board = new TaflBoard(status.state, status.move === "black" ? B : W);
 			size = status.state.length;
 			renderer.draw(board, selectedPiece);
+
+			//console.log("is ui updater: "+uiUpdateCallback);
+			if(uiUpdateCallback){
+				uiUpdateCallback({
+					variant : status.variant,
+					playerColor : status.color,
+					moveColor : status.move
+					//TODO isGameOver
+					//winColor
+					//stalemate
+				});
+			}
 		});
 	}, 1000);
 
 	//local game handler
 	//TODO add indicators for the current player, win state
 	canvas.onclick = function(event){
-
+		console.log(board.getCurrentPlayer());
+		console.log(gameInfo.move);
+		console.log(gameInfo);
+		console.log((gameInfo.color != gameInfo.move));
+		console.log(!gameInfo.moveToken);
 		if(gameInfo.color != gameInfo.move || !gameInfo.moveToken){
 			return;
 		}
@@ -142,6 +151,7 @@ function TaflGameNetwork(canvas, /*playerColor,*/  /*, opponentType*/ gameId, pl
 	}
 
 	//tells the server the moves we make
+	//change the server to make a move stack and generate current state
 	function setMove(gameId, playerId, token, state, callback){
 		console.log("pid2 : "+playerId);
 		var ajax = new XMLHttpRequest();

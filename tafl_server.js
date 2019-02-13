@@ -59,7 +59,7 @@ app.get("/join/:gameId", function(req, res){
 	var gameId = req.params.gameId;
 	var playerId = game.join(req.params.gameId);//TODO gonna need this to return player info
 		//return the game html file, and it will parse the url
-	res.redirect("/tafl-game.html?gameId="+encodeURIComponent(gameId)+"&playerId="+encodeURIComponent(playerId)+"&j=1");
+	res.redirect("/network-game.html?gameId="+encodeURIComponent(gameId)+"&playerId="+encodeURIComponent(playerId)+"&j=1");
 });
 
 app.get("/game/:gameId/:playerId", function(req, res){
