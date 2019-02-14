@@ -17,6 +17,35 @@ function TaflRenderer(canvas, humanPlayerColor){
 	const B = 0x02;//black (attackers)
 	const K = 0x04;//white king
 
+	//annotation constants
+	const RANK = ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19"];
+	const FILE_A = "abcdefghijklmnopqrs";
+	const FILE_R = [//runic files
+		"\u16A0", //F
+		"\u16A2", //U
+		"\u16A6", //TH
+		"\u16A8", //A
+		"\u16B1", //R
+		"\u16B2", //K
+		"\u16B7", //G
+		"\u16B9", //W
+		"\u16BA", //H
+		"\u16BE", //N
+		"\u16C1", //I (short)
+		"\u16C3", //J (Y)
+		"\u16C7", //I (long)
+		"\u16C8", //P
+		"\u16C9", //Z
+		"\u16CB", //S
+		"\u16CF", //T
+		"\u16D2", //B
+		"\u16D6", //E
+		"\u16D7", //M
+		"\u16DA", //L
+		"\u16DC", //NG
+		"\u16DE", //D
+		"\u16DF"];//O
+
 
 	//flags
 	const SELECTED = 8;
@@ -65,10 +94,19 @@ function TaflRenderer(canvas, humanPlayerColor){
 					drawAvailableMove(i*tileSizeX, j*tileSizeY, tileSizeX, tileSizeY, style);
 				}
 				lastStyle = lastStyle === DARK ? LIGHT : DARK;
+
+				//draw annotations now
+				//TODO debug annotations
+				ctx.fillStyle = "#333";
+				ctx.font = "20px Georgia";
+				ctx.fillText(FILE_R[i]+RANK[state.length-j],
+					     i*tileSizeX+0.45*tileSizeX, 
+					     j*(tileSizeY)+tileSizeY/*-0.45*tileSizeY*/);
 			}
 		}
-		//draw annotations now
-		//use | to figure out annotations. wings in the morning!
+				
+
+
 		drawPieces(state);
 	};
 
