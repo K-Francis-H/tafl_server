@@ -18,7 +18,8 @@
 					variant = variant.toUpperCase();
 					var editor = new TaflBoardEditor(document.getElementById("canvas"), TaflBoard.BRANDUBH);
 				}else{
-					//TODO bad tell user no, or present selector
+					//need a variant, return to main page to select one
+					window.location.replace("/");
 				}
 				
 			});

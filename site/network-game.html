@@ -32,6 +32,12 @@
 				var isJoining = url.searchParams.get("j");
 				console.log("gameId: "+gameId);
 				console.log("playerId: "+playerId);
+
+				if(!gameId || !playerId){
+					//return to main page, nothing to do here
+					window.location.replace("/");
+				}
+
 				var localGame = new TaflGameNetwork(document.getElementById("canvas"), gameId, playerId, uiUpdater);
 				
 				if(!isJoining){
