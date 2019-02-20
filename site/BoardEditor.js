@@ -151,6 +151,9 @@ const ALEA_EVANGELII =
  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
  [0,0,B,0,0,B,0,0,0,0,0,0,0,B,0,0,B,0,0]];
 
+const RANK = ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19"];
+const FILE_A = "abcdefghijklmnopqrs";
+
 function TaflBoardEditor(canvas, variant){
 	var self = this;
 
@@ -197,7 +200,7 @@ function TaflBoardEditor(canvas, variant){
 				else{
 					ctx.fillStyle = lastStyle;
 				}
-				ctx.fillRect(i*tileSizeX, j*tileSizeY, tileSizeX, tileSizeY);
+				//ctx.fillRect(i*tileSizeX, j*tileSizeY, tileSizeX, tileSizeY);
 
 				if( (state[i][j] & VALID_MOVE) > 0){
 					console.log(state[i][j]);
@@ -205,6 +208,16 @@ function TaflBoardEditor(canvas, variant){
 					drawAvailableMove(i*tileSizeX, j*tileSizeY, tileSizeX, tileSizeY, style);
 				}
 				lastStyle = getFillStyle(lastStyle);
+
+				
+
+				//NOTE debugging FEN notation, putting symbols in to determine how memory maps to the rendering
+				
+				ctx.font = "20px Georgia";
+				ctx.fillText(FILE_A[i]+RANK[j],
+					     i*tileSizeX+0.25*tileSizeX, 
+					     j*tileSizeY+0.25*tileSizeY);
+					     
 			}
 		}
 		drawPieces(state);

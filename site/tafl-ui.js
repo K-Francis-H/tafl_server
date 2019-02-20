@@ -123,7 +123,7 @@ document.addEventListener("DOMContentLoaded", function(){
 	}
 
 	function createLocalAIGame(color, variant){
-		window.open("/tafl-game-lai.html?playerColor="+color+"&variant="+variant);
+		window.open("/ai-game.html?playerColor="+color+"&variant="+variant);
 	}
 
 	function createLocalGame(variant){

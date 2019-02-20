@@ -36,12 +36,12 @@ function TaflBoard(variant, player, rules){
 		let newMoves = [];
 		for(var i=0; i < state.length; i++){
 			for(var j=0; j < state[i].length; j++){
-				if(state[i][j] & mask > 0){
-					moves.concat(getMovesForPieceAtPosition(i,j));
+				if( (state[i][j] & mask) > 0){
+					newMoves = newMoves.concat(getMovesForPieceAtPosition(i,j));
 				}
 			}
 		}
-		return moves;
+		return newMoves;
 	};
 
 	//this.getMovesForSelectedPiece = function(i,j){
@@ -232,6 +232,10 @@ function TaflBoard(variant, player, rules){
 
 	this.getBoard = function(){
 		return state; //TODO may need to return an actual reference to this object
+	}
+
+	this.clone = function(){
+		return new TaflBoard(state, currentPlayer);
 	}
 
 	//utils
