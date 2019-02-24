@@ -402,6 +402,18 @@ TaflBoard.TABLUT =
  [0,0,0,0,B,0,0,0,0],
  [0,0,0,B,B,B,0,0,0]];
 
+//source http://tafl.cyningstan.com/page/689/ealdfaeder-taefl-rules
+TaflBoard.EALDFAEDER = 
+[[0,0,0,B,B,B,0,0,0],
+ [0,0,0,0,B,0,0,0,0],
+ [0,0,0,0,0,0,0,0,0],
+ [B,0,0,W,W,W,0,0,B],
+ [B,B,0,W,K,W,0,B,B],
+ [B,0,0,W,W,W,0,0,B],
+ [0,0,0,0,0,0,0,0,0],
+ [0,0,0,0,B,0,0,0,0],
+ [0,0,0,B,B,B,0,0,0]];
+
 //source https://en.wikipedia.org/wiki/Tafl_games
 TaflBoard.TAWLBWRDD = 
 [[0,0,0,0,B,B,B,0,0,0,0],
@@ -415,6 +427,34 @@ TaflBoard.TAWLBWRDD =
  [0,0,0,0,0,B,0,0,0,0,0],
  [0,0,0,0,B,0,B,0,0,0,0],
  [0,0,0,0,B,B,B,0,0,0,0]];
+
+//source http://tafl.cyningstan.com/page/172/tawlbwrdd
+TaflBoard.TAWLBWRDD_ALTERNATE =
+[[0,0,0,0,B,B,B,0,0,0,0],
+ [0,0,0,0,B,B,B,0,0,0,0],
+ [0,0,0,0,0,W,0,0,0,0,0],
+ [0,0,0,0,0,W,0,0,0,0,0],
+ [B,B,0,0,0,W,0,0,0,B,B],
+ [B,B,W,W,W,K,W,W,W,B,B],
+ [B,B,0,0,0,W,0,0,0,B,B],
+ [0,0,0,0,0,W,0,0,0,0,0],
+ [0,0,0,0,0,W,0,0,0,0,0],
+ [0,0,0,0,B,B,B,0,0,0,0],
+ [0,0,0,0,B,B,B,0,0,0,0]];
+
+//source http://tafl.cyningstan.com/page/172/tawlbwrdd
+TaflBoard.TAWLBWRDD_ALTERNATE_2 =
+[[0,0,0,B,B,B,B,B,0,0,0],
+ [0,0,0,0,0,B,0,0,0,0,0],
+ [0,0,0,0,0,W,0,0,0,0,0],
+ [B,0,0,0,0,W,0,0,0,0,B],
+ [B,0,0,0,0,W,0,0,0,0,B],
+ [B,B,W,W,W,K,W,W,W,B,B],
+ [B,0,0,0,0,W,0,0,0,0,B],
+ [B,0,0,0,0,W,0,0,0,0,B],
+ [0,0,0,0,0,W,0,0,0,0,0],
+ [0,0,0,0,0,B,0,0,0,0,0],
+ [0,0,0,B,B,B,B,B,0,0,0]];
 
 //source https://en.wikipedia.org/wiki/Tafl_games
 TaflBoard.HNEFATAFL = 

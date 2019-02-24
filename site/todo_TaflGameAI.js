@@ -27,7 +27,7 @@ function TaflGameAI(canvas, /*playerColor,*/ variant /*, opponentType*/, player)
 	playerColor = player === "black" ? B : W ;
 	aiColor = playerColor === W ? B : W;
 
-	ai = new MonteCarloAI(25, aiColor);
+	ai = new RandomAI(aiColor);
 
 	var loop = setInterval(function(){
 		if(board.getCurrentPlayer() === aiColor){

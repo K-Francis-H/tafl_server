@@ -72,7 +72,10 @@ document.addEventListener("DOMContentLoaded", function(){
 			case "fidchell-button": 	variant="fidchell"; break;
 			case "ard-ri-button":		variant="ard_ri"; break;
 			case "tablut-button":		variant="tablut"; break;
+			case "ealdfaeder-button":	variant="ealdfaeder"; break;
 			case "tawlbwrdd-button":	variant="tawlbwrdd"; break;
+			case "tawlbwrdd-alt-1-button":	variant="tawlbwrdd_alternate"; break;
+			case "tawlbwrdd-alt-2-button":	variant="tawlbwrdd_alternate_2"; break;
 			case "hnefatafl-button":	variant="hnefatafl"; break;
 			case "large-hnefatafl-button":	variant="large_hnefatafl"; break;
 			case "alea-evangelii-button":	variant="alea_evangelii"; break;

@@ -26,7 +26,7 @@ function MonteCarloAI(MAXDEPTH, player){
 			let newGame = startState;
 			let isStale = false;
 			let moveCount = 0;
-			while(!newGame.isGameOver() && moveCount < 100){
+			while(!newGame.isGameOver() && moveCount < 20){
 				let moves = newGame.getMoves(newGame.getCurrentPlayer());
 				if(moves.length === 0){
 					if(game.getCurrentPlayer() === B){
