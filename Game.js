@@ -81,6 +81,18 @@ const INITIAL_STATE = {
 	 [0,0,0,0,B,0,0,0,0],
 	 [0,0,0,B,B,B,0,0,0]],
 
+	//source http://tafl.cyningstan.com/page/689/ealdfaeder-taefl-rules
+	"ealdfaeder":
+	[[0,0,0,B,B,B,0,0,0],
+	 [0,0,0,0,B,0,0,0,0],
+	 [0,0,0,0,0,0,0,0,0],
+	 [B,0,0,W,W,W,0,0,B],
+	 [B,B,0,W,K,W,0,B,B],
+	 [B,0,0,W,W,W,0,0,B],
+	 [0,0,0,0,0,0,0,0,0],
+	 [0,0,0,0,B,0,0,0,0],
+	 [0,0,0,B,B,B,0,0,0]],
+
 	//source https://en.wikipedia.org/wiki/Tafl_games
 	"tawlbwrdd":
 	[[0,0,0,0,B,B,B,0,0,0,0],
@@ -94,6 +106,34 @@ const INITIAL_STATE = {
 	 [0,0,0,0,0,B,0,0,0,0,0],
 	 [0,0,0,0,B,0,B,0,0,0,0],
 	 [0,0,0,0,B,B,B,0,0,0,0]],
+
+	//source http://tafl.cyningstan.com/page/172/tawlbwrdd
+	"tawlbwrdd-alt-1":
+	[[0,0,0,0,B,B,B,0,0,0,0],
+	 [0,0,0,0,B,B,B,0,0,0,0],
+	 [0,0,0,0,0,W,0,0,0,0,0],
+	 [0,0,0,0,0,W,0,0,0,0,0],
+	 [B,B,0,0,0,W,0,0,0,B,B],
+	 [B,B,W,W,W,K,W,W,W,B,B],
+	 [B,B,0,0,0,W,0,0,0,B,B],
+	 [0,0,0,0,0,W,0,0,0,0,0],
+	 [0,0,0,0,0,W,0,0,0,0,0],
+	 [0,0,0,0,B,B,B,0,0,0,0],
+	 [0,0,0,0,B,B,B,0,0,0,0]],
+
+	//source http://tafl.cyningstan.com/page/172/tawlbwrdd
+	"tawlbwrdd-alt-2":
+	[[0,0,0,B,B,B,B,B,0,0,0],
+	 [0,0,0,0,0,B,0,0,0,0,0],
+	 [0,0,0,0,0,W,0,0,0,0,0],
+	 [B,0,0,0,0,W,0,0,0,0,B],
+	 [B,0,0,0,0,W,0,0,0,0,B],
+	 [B,B,W,W,W,K,W,W,W,B,B],
+	 [B,0,0,0,0,W,0,0,0,0,B],
+	 [B,0,0,0,0,W,0,0,0,0,B],
+	 [0,0,0,0,0,W,0,0,0,0,0],
+	 [0,0,0,0,0,B,0,0,0,0,0],
+	 [0,0,0,B,B,B,B,B,0,0,0]],
 
 	//source https://en.wikipedia.org/wiki/Tafl_games
 	"hnefatafl":
@@ -153,6 +193,7 @@ module.exports = {
 	create : function(gameInfo){
 		var color = gameInfo.color;
 		var variant = gameInfo.variant;
+		console.log(gameInfo);
 
 		if(!isValidColor(color)){
 			//TODO freakout
@@ -161,7 +202,7 @@ module.exports = {
 			//TODO freakout
 		}
 
-		var game = new Game(color, variant);
+		let game = new Game(color, variant);
 		games[game.getId()] = game;
 
 		return {
@@ -208,6 +249,7 @@ module.exports = {
 
 function Game(creatorColor, variant){
 	var gameId = uuid.v4();
+	console.log("NEW GAME: "+gameId);
 
 	var players = [];
 
@@ -224,13 +266,13 @@ function Game(creatorColor, variant){
 		id : uuid.v4()
 	};
 
-	var state = INITIAL_STATE[variant];
+	var state = JSON.parse(JSON.stringify(INITIAL_STATE[variant]));
 	var size = state.length;
 	
 	var states = [];
 	states.push(JSON.parse(JSON.stringify(state)));
 
-	var board = new TaflBoard(INITIAL_STATE[variant]);
+	var board = new TaflBoard(JSON.parse(JSON.stringify(INITIAL_STATE[variant])));
 
 	this.getId = function(){
 		return gameId;
