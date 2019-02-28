@@ -164,7 +164,7 @@ function TaflBoard(variant, player, rules){
 		console.log(move);
 
 		if(isGameOver()){
-			return;
+			//return;
 		}
 
 		//then apply
@@ -232,10 +232,11 @@ function TaflBoard(variant, player, rules){
 
 	this.getBoard = function(){
 		return state; //TODO may need to return an actual reference to this object
+		//return JSON.parse(JSON.stringify(state));
 	}
 
 	this.clone = function(){
-		return new TaflBoard(state, currentPlayer);
+		return new TaflBoard(JSON.parse(JSON.stringify(state)), currentPlayer);
 	}
 
 	//utils

@@ -45,8 +45,10 @@ function TaflGameNetwork(canvas, /*playerColor,*/  /*, opponentType*/ gameId, pl
 			}
 			gameInfo.move = status.move;
 			gameInfo.color = status.color;
+			gameInfo.isGameOver = status.isGameOver;
+			
 
-			console.log(status);
+			//console.log(status);
 			board = new TaflBoard(status.state, status.move === "black" ? B : W);
 			size = status.state.length;
 			renderer.draw(board, selectedPiece);
@@ -56,11 +58,15 @@ function TaflGameNetwork(canvas, /*playerColor,*/  /*, opponentType*/ gameId, pl
 				uiUpdateCallback({
 					variant : status.variant,
 					playerColor : status.color,
-					moveColor : status.move
-					//TODO isGameOver
-					//winColor
-					//stalemate
+					moveColor : status.move,
+					isGameOver : (status.isGameOver > 0),
+					winColor : (status.isGameOver === B ? "black" : "white")
+					//TODO stalemate
 				});
+			}
+			
+			if(gameInfo.isGameOver > 0){
+				clearInterval(loop);
 			}
 		});
 	}, 1000);
@@ -73,7 +79,7 @@ function TaflGameNetwork(canvas, /*playerColor,*/  /*, opponentType*/ gameId, pl
 		console.log(gameInfo);
 		console.log((gameInfo.color != gameInfo.move));
 		console.log(!gameInfo.moveToken);
-		if(gameInfo.color != gameInfo.move || !gameInfo.moveToken){
+		if(gameInfo.color != gameInfo.move || !gameInfo.moveToken || (gameInfo.isGameOver > 0)){
 			return;
 		}
 
@@ -114,10 +120,14 @@ function TaflGameNetwork(canvas, /*playerColor,*/  /*, opponentType*/ gameId, pl
 			});
 			selectedPiece = null;
 
+			console.log("placed move locally:");
+			console.log(board.getBoard());
+
 			//TODO add logic here for setting the move on the server
 			setMove(gameInfo.gameId, gameInfo.playerId, gameInfo.moveToken, board.getLastMove(), setMoveCallback);
 
 		}else{//your selecting an empty space that you cannot move to
+			consol.log("null AF");
 			selectedPiece = null; //deselect your piece
 		}
 
@@ -176,8 +186,10 @@ function TaflGameNetwork(canvas, /*playerColor,*/  /*, opponentType*/ gameId, pl
 	function setMoveCallback(isValid){
 		if(isValid){
 			//make move locally?
+			console.log("MOVE VALID");
 		}else{
 			//complain
+			console.log("MOVE INVALID");
 		}
 	}
 }

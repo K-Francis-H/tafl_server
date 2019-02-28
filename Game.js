@@ -330,6 +330,7 @@ function Game(creatorColor, variant){
 	}
 
 	this.getStatus = function(playerId){
+
 		var player = players[playerId];
 		if(player.color === moveToken.color){
 			return {
@@ -337,7 +338,8 @@ function Game(creatorColor, variant){
 				move : moveToken.color,
 				token : moveToken.id,
 				state : board.getAnnotatedBoard(),//states[states.length-1],
-				color : player.color
+				color : player.color,
+				isGameOver : board.isGameOver()
 			};
 		}else{
 			//dont give them the token, its not their turn
@@ -345,10 +347,17 @@ function Game(creatorColor, variant){
 				variant : getPrettyName(variant),
 				move : moveToken.color,
 				state : board.getAnnotatedBoard(),//states[states.length-1],
-				color : player.color
+				color : player.color,
+				isGameOver : board.isGameOver()
 			};
 		}
-		//TODO if game has completed wait until both players are notified then destroy this game
+		//if game has completed wait until both players are notified then destroy this game
+		if(board.isGameOver() > 0){
+			setTimeout(function(){
+				//TODO annotate and archive game in a db to keep stats
+				module.exports.destroy(gameId);
+			}, 60000);
+		}
 	}
 
 	function updateMoveToken(){
