@@ -97,11 +97,11 @@ function TaflRenderer(canvas, humanPlayerColor){
 
 				//draw annotations now
 				//TODO debug annotations
-				ctx.fillStyle = "#333";
-				ctx.font = "20px Georgia";
-				ctx.fillText(FILE_R[i]+RANK[state.length-j],
-					     i*tileSizeX+0.45*tileSizeX, 
-					     j*(tileSizeY)+tileSizeY/*-0.45*tileSizeY*/);
+				//ctx.fillStyle = "#333";
+				//ctx.font = "20px Georgia";
+				//ctx.fillText(FILE_R[i]+RANK[state.length-j],
+				//	     i*tileSizeX+0.45*tileSizeX, 
+				//	     j*(tileSizeY)+tileSizeY/*-0.45*tileSizeY*/);
 			}
 		}
 				
