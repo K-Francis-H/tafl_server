@@ -27,10 +27,10 @@ function TaflGameAI(canvas, /*playerColor,*/ variant /*, opponentType*/, player)
 	playerColor = player === "black" ? B : W ;
 	aiColor = playerColor === W ? B : W;
 
-	ai = new RandomAI(aiColor);
+	ai = new MinimaxAI(3, aiColor);
 
 	var loop = setInterval(function(){
-		if(board.getCurrentPlayer() === aiColor){
+		if(board.getCurrentPlayer() === aiColor  && board.isGameOver() > 0){
 			board.makeMove(ai.getMove(board));
 			renderer.draw(board);
 		}
@@ -44,7 +44,7 @@ function TaflGameAI(canvas, /*playerColor,*/ variant /*, opponentType*/, player)
 			return;
 		}
 
-		let winner = board.isGameOver()
+		let winner = board.isGameOver();
 		if(winner){
 			console.log(winner+" wins");
 			return;

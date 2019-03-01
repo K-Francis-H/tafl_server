@@ -28,6 +28,7 @@ function TaflBoard(variant, player, rules){
 	//var selectedPiece = null;
 
 	this.getMoves = function(player){
+		console.log(player);
 		if(player != W && player != B){
 			throw "Parameter 'player' must be one of 1 (defenders) or 2 (attackers)";
 		}
@@ -151,6 +152,7 @@ function TaflBoard(variant, player, rules){
 
 	//to see what a move does without changing the underlying game state
 	this.simulateMove = function(move){
+		console.log(move);
 		let clone = JSON.parse(JSON.stringify(state));
 		let simulatedState = new TaflBoard(clone, move.player, rules);//TODO or maybe use the currentPlayer value
 		simulatedState.makeMove(move);
@@ -330,6 +332,13 @@ function TaflBoard(variant, player, rules){
 
 		//black wins, king is gone
 		return B;
+	}
+
+	function king4sideCaptureCheck(k/*kings position*/){
+		return (state[k.x+1][k.y] && ((state[k.x+1][k.y] & B) > 0 || isSpecialCell(k.x+1, k.y)))
+		&& (state[k.x-1][k.y] && ((state[k.x-1][k.y] & B) > 0 || isSpecialCell(k.x-1, k.y)))
+		&& (state[k.x][k.y+1] && ((state[k.x][k.y+1] & B) > 0 || isSpecialCell(k.x, k.y+1)))
+		&& (state[k.x][k.y-1] && ((state[k.x][k.y-1] & B) > 0 || isSpecialCell(k.x, k.y-1)));
 	}
 }
 
