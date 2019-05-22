@@ -268,6 +268,7 @@ function TaflBoard(variant, player, rules){
 
 	//should be called AFTER performing the move on the game state
 	//TODO need to check captures against center to see if it is occupied by king. if so white pieces are uncapturable against it
+	//TODO use notation and this to auto score games for the AI
 	function checkCaptures(move){
 		//TODO use in the (done)makeMove, simulateMove, and (done)undo functions (move needs to store capture metadata in an array)
 		let color = (state[move.ex][move.ey] & PIECE_MASK) === B ? B : WHITE_MASK;
