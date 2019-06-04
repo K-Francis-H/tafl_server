@@ -28,7 +28,7 @@ function TaflBoard(variant, player, rules){
 	//var selectedPiece = null;
 
 	this.getMoves = function(player){
-		console.log(player);
+		/*console.log(player);
 		if(player != W && player != B){
 			throw "Parameter 'player' must be one of 1 (defenders) or 2 (attackers)";
 		}
@@ -41,8 +41,8 @@ function TaflBoard(variant, player, rules){
 					newMoves = newMoves.concat(getMovesForPieceAtPosition(i,j));
 				}
 			}
-		}
-		return newMoves;
+		}*/
+		return rules.getMoves();//newMoves;
 	};
 
 	//this.getMovesForSelectedPiece = function(i,j){
@@ -87,7 +87,7 @@ function TaflBoard(variant, player, rules){
 		this.player = player; //TODO may be inferrable from board state
 	};
 
-	function getMovesForPieceAtPosition(i, j, player){ //think its inferrable
+	/*function getMovesForPieceAtPosition(i, j, player){ //think its inferrable
 
 		let isK = isKing(i,j);
 		let limitFunc = function(x,y){
@@ -147,7 +147,7 @@ function TaflBoard(variant, player, rules){
 			}
 		}  
 		return pieceMoves;
-	}
+	}*/
 
 
 	//to see what a move does without changing the underlying game state
@@ -174,7 +174,7 @@ function TaflBoard(variant, player, rules){
 		//moves.push(move);
 		state[move.ex][move.ey] = state[move.sx][move.sy];
 		state[move.sx][move.sy] = E;
-		checkCaptures(move);
+		rules.checkCaptures(move);
 		moves.push(move);
 		console.log("after");
 		console.log(move);

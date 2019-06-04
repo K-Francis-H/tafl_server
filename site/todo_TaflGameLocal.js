@@ -1,4 +1,4 @@
-function TaflGameLocal(canvas, /*playerColor,*/ variant /*, opponentType*/){
+function TaflGameLocal(canvas, /*playerColor,*/ variant, /*, opponentType*/rules){
 	const E = 0x00;//empty
 	const W = 0x01;//white (defenders)
 	const B = 0x02;//black (attackers)
@@ -15,7 +15,7 @@ function TaflGameLocal(canvas, /*playerColor,*/ variant /*, opponentType*/){
 	const PIECE_MASK = BLACK_MASK | WHITE_MASK;
 
 	var renderer = new TaflRenderer(canvas);
-	var board = new TaflBoard(variant);
+	var board = new TaflBoard(variant, null, rules);
 
 	var width = canvas.width;
 	var height = canvas.height;
