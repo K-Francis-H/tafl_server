@@ -15,15 +15,30 @@
 				//var editor = new TaflBoardEditor(document.getElementById("canvas"), TaflBoard.BRANDUBH);
 				var url = new URL(document.URL);
 				var variant = url.searchParams.get("variant");
+				var rules = resolveRuleSet(url.searchParams.get("rules"));
 				if(variant){
 					variant = variant.toUpperCase();
-					var localGame = new TaflGameLocal(document.getElementById("canvas"), TaflBoard[variant]);
+					var localGame = new TaflGameLocal(document.getElementById("canvas"), TaflBoard[variant], rules);
 				}else{
 					//bad...
 					//redirect to main page
 					window.location.replace("/");
 				}
 			});
+
+			function resolveRuleSet(value){
+				switch(value){
+					case "fetlar":
+						return new FetlarRules();
+					case "copenhagen":
+						return new CopenhagenRules();
+					case "ealdfaeder":
+						return new EaldfaederRUles();
+					case "cleveland":
+					default:
+						return new ClevelandRules();
+				}
+			}
 		</script>
 	</head>
 	<body>

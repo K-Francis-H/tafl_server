@@ -106,20 +106,6 @@ document.addEventListener("DOMContentLoaded", function(){
 
 	}
 
-	function resolveRuleSet(value){
-		switch(value){
-			case "fetlar":
-				return new FetlarRules();
-			case "copenhagen":
-				return new CopenhagenRules();
-			case "ealdfaeder":
-				return new EaldfaederRUles();
-			case "cleveland":
-			default:
-				return new ClevelandRules();
-		}
-	}
-
 	function hideAllSummaries(){
 		for(var i=0; i < summaries.length; i++){
 			summaries[i].style.display = "none";

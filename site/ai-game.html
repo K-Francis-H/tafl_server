@@ -19,13 +19,28 @@
 				var url = new URL(document.URL);
 				var variant = url.searchParams.get("variant");
 				var playerColor = url.searchParams.get("playerColor");
+				var rules = resolveRuleSet(url.searchParams.get("rules"));
 				if(variant && playerColor){
 					variant = variant.toUpperCase();
-					var aiGame = new TaflGameAI(document.getElementById("canvas"), TaflBoard[variant], playerColor);
+					var aiGame = new TaflGameAI(document.getElementById("canvas"), TaflBoard[variant], playerColor, rules);
 				}else{
 					//bad...
 					//redirect to main page
 					window.location.replace("/");
+				}
+
+				function resolveRuleSet(value){
+					switch(value){
+						case "fetlar":
+							return new FetlarRules();
+						case "copenhagen":
+							return new CopenhagenRules();
+						case "ealdfaeder":
+							return new EaldfaederRUles();
+						case "cleveland":
+						default:
+							return new ClevelandRules();
+					}
 				}
 			});
 		</script>
