@@ -64,6 +64,14 @@ document.addEventListener("DOMContentLoaded", function(){
 			return;
 		}
 
+		var rulesSel = document.getElementsByName("rules");
+		var rules;
+		for(var i=0; i < rulesSel.length; i++){
+			if(rulesSel[i].checked){
+				rules = rulesSel[i].value;
+			}
+		}
+
 		//get game variant
 		var variant;
 		switch(buttonId){
@@ -87,15 +95,29 @@ document.addEventListener("DOMContentLoaded", function(){
 		//if we got this far we have a color and a variant
 		//ask server to create game
 		if(opponent === "ai"){
-			createLocalAIGame(color, variant);
+			createLocalAIGame(color, variant, rules);
 		}else if(opponent === "local"){
-			createLocalGame(variant);
+			createLocalGame(variant, rules);
 		}else if(opponent === "edit"){
 			createBoardEditSession(variant);
 		}else{
-			createGame(color, variant);
+			createGame(color, variant, rules);
 		}
 
+	}
+
+	function resolveRuleSet(value){
+		switch(value){
+			case "fetlar":
+				return new FetlarRules();
+			case "copenhagen":
+				return new CopenhagenRules();
+			case "ealdfaeder":
+				return new EaldfaederRUles();
+			case "cleveland":
+			default:
+				return new ClevelandRules();
+		}
 	}
 
 	function hideAllSummaries(){
@@ -104,7 +126,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		}
 	}
 
-	function createGame(color, variant){
+	function createGame(color, variant, rules){
 		var ajax = new XMLHttpRequest();
 		ajax.open("POST", "/create-game", true);
 		ajax.setRequestHeader("Content-type", "application/json");
@@ -120,17 +142,18 @@ document.addEventListener("DOMContentLoaded", function(){
 		};
 		ajax.send(JSON.stringify({
 			color:color,
-			variant:variant//,
+			variant:variant,
+			rules:rules
 			/*TODO add: username:username*/
 		}));
 	}
 
-	function createLocalAIGame(color, variant){
-		window.open("/ai-game.html?playerColor="+color+"&variant="+variant);
+	function createLocalAIGame(color, variant, rules){
+		window.open("/ai-game.html?playerColor="+color+"&variant="+variant+"&rules="+rules);
 	}
 
-	function createLocalGame(variant){
-		window.open("/local-game.html?variant="+variant);
+	function createLocalGame(variant, rules){
+		window.open("/local-game.html?variant="+variant+"&rules="+rules);
 	}
 
 	function createBoardEditSession(variant){
