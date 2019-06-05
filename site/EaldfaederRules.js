@@ -28,6 +28,8 @@ function EaldfaederRules(){
 	};
 	
 	this.getMoves = function(taflBoard, player){
+		console.log(player);
+		console.log(taflBoard);
 		if(player != W && player != B){
 			throw "Parameter 'player' must be one of 1 (defenders) or 2 (attackers)";
 		}
@@ -167,7 +169,7 @@ function EaldfaederRules(){
 		}
 
 		let isAttacked = function(state, x, y){
-			return (!state[x] || !state[x][y] || state[x][y] === B) || isKingsHall(state, x,y);
+			return (state[x] === undefined || state[x][y] === undefined || state[x][y] === B) || isKingsHall(state, x,y);
 		}	
 
 		//four sides (include empty kings hall as attacker in checks)
