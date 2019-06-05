@@ -187,7 +187,7 @@ function FetlarRules(){
 	};
 
 	this.getMovesForPieceAtPosition = function(state, i, j){
-		var isKing = state[i][j] & K > 0;
+		var isKing = (state[i][j] & K) > 0;
 		
 		//king can return to his hall unlike Cleveland rules
 	
@@ -195,7 +195,7 @@ function FetlarRules(){
 
 		let limitFunc = function(x,y){
 			//king may reenter the kings hall, others cannot enter special cells
-			return ( isKing && isKingsHall(state, x,y) ) || !isSpecialCell(state, x,y) 
+			return isKing || !isSpecialCell(state, x,y) 
 		};
 
 		player = isKing ? W : state[i][j] & PIECE_MASK;
@@ -270,7 +270,7 @@ function FetlarRules(){
 	}
 
 	function isSpecialCell(state, x, y){
-		return isKingsHall(x, y) || isCorner(state, x, y);
+		return isKingsHall(state, x, y) || isCorner(state, x, y);
 	}
 
 }

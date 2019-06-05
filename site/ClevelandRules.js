@@ -48,7 +48,7 @@ function ClevelandRules(){
 		let isK = isKing(state, i,j);
 		let limitFunc = function(x,y){
 			//king may only leave the kings hall, never enter, all others cannot ever be in any special square
-			return isK || !isSpecialCell(x,y);//(isK && !isKingsHall(x,y)) || !isSpecialCell(x,y); 
+			return (isK && !isKingsHall(state, x,y)) || !isSpecialCell(state, x,y); 
 		};
 
 		player = isK ? W : state[i][j] & PIECE_MASK;
