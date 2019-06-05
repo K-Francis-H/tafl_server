@@ -66,7 +66,7 @@ function TaflBoard(variant, player, rules){
 		}
 		if(selectedPiece){//apply selected piece and show available moves
 			annoState[selectedPiece.x][selectedPiece.y] |= SELECTED;
-			let availableMoves = getMovesForPieceAtPosition(selectedPiece.x,selectedPiece.y);
+			let availableMoves = rules.getMovesForPieceAtPosition(state, selectedPiece.x,selectedPiece.y);
 			//console.log(availableMoves);
 			for(let i=0; i < availableMoves.length; i++){
 				let move = availableMoves[i];
@@ -174,7 +174,7 @@ function TaflBoard(variant, player, rules){
 		//moves.push(move);
 		state[move.ex][move.ey] = state[move.sx][move.sy];
 		state[move.sx][move.sy] = E;
-		rules.checkCaptures(move);
+		rules.checkCaptures(state, move);
 		moves.push(move);
 		console.log("after");
 		console.log(move);

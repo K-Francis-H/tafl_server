@@ -9,6 +9,7 @@ const cmd = require("child_process");
 const bodyParser = require("body-parser");
 
 const game = require("./Game.js");
+const TaflBoard = require("./site/todo_TaflBoard.js");
 
 const HTTP_PORT = 9001;//0x64AF1;//
 const HTTPS_PORT = 9002;//0x54AF1;

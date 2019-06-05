@@ -41,7 +41,7 @@ function CopenhagenRules(size){
 
 	};
 
-	function getMovesForPieceAtPosition(state, i, j){
+	this.getMovesForPieceAtPosition = function(state, i, j){
 		var isKing = state[i][j] & K > 0;
 		
 		//king can return to his hall unlike Cleveland rules
