@@ -9,7 +9,7 @@ const cmd = require("child_process");
 const bodyParser = require("body-parser");
 
 const game = require("./Game.js");
-const TaflBoard = require("./site/todo_TaflBoard.js");
+const TaflBoard = require("./site/TaflBoard.js");
 
 const HTTP_PORT = 9001;//0x64AF1;//
 const HTTPS_PORT = 9002;//0x54AF1;
@@ -58,9 +58,11 @@ app.post("/create-game", function(req, res){
 
 app.get("/join/:gameId", function(req, res){
 	var gameId = req.params.gameId;
-	var playerId = game.join(req.params.gameId);//TODO gonna need this to return player info
+	var playerInfo = game.join(req.params.gameId);//TODO gonna need this to return player info
+	var rules = playerInfo.rules;
+	var playerId = playerInfo.playerId;
 		//return the game html file, and it will parse the url
-	res.redirect("/network-game.html?gameId="+encodeURIComponent(gameId)+"&playerId="+encodeURIComponent(playerId)+"&j=1");
+	res.redirect("/network-game.html?gameId="+encodeURIComponent(gameId)+"&playerId="+encodeURIComponent(playerId)+"&j=1"+"&rules="+encodeURIComponent(rules));
 });
 
 app.get("/game/:gameId/:playerId", function(req, res){

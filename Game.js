@@ -1,5 +1,11 @@
 const uuid = require("node-uuid");
 
+//rules
+const rules = require("./Rules.js");
+const TaflBoard = require("./TaflBoard.js").TaflBoard;
+
+
+
 //board ids
 const W = 0x01;//white
 const B = 0x02;//black
@@ -203,7 +209,7 @@ module.exports = {
 			//TODO freakout
 		}
 
-		let game = new Game(color, variant, rules);
+		let game = new Game(color, variant, rules, gameInfo.rules);
 		games[game.getId()] = game;
 
 		return {
@@ -251,18 +257,18 @@ module.exports = {
 function resolveRuleSet(value){
 	switch(value){
 		case "fetlar":
-			return new FetlarRules();
+			return new rules.FetlarRules();
 		case "copenhagen":
-			return new CopenhagenRules();
+			return new rules.CopenhagenRules();
 		case "ealdfaeder":
-			return new EaldfaederRUles();
+			return new rules.EaldfaederRules();
 		case "cleveland":
 		default:
-			return new ClevelandRules();
+			return new rules.ClevelandRules();
 	}
 }
 
-function Game(creatorColor, variant, rules){
+function Game(creatorColor, variant, rules, rulesName){
 	var gameId = uuid.v4();
 	console.log("NEW GAME: "+gameId);
 
@@ -304,10 +310,13 @@ function Game(creatorColor, variant, rules){
 	this.playerTwoJoin = function(){
 		playerTwo = {
 			color : creatorColor === "white" ? "black" : "white",
-			id : uuid.v4()
+			id : uuid.v4(),
 		};
 		players[playerTwo.id] = playerTwo;
-		return playerTwo.id;
+		return {
+			playerId: playerTwo.id,
+			rules : rulesName
+		};
 	}
 
 	this.setMove = function(playerId, token, state){

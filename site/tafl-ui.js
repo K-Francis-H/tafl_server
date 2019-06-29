@@ -123,7 +123,7 @@ document.addEventListener("DOMContentLoaded", function(){
 				var playerId = json.playerId;
 				console.log(ajax.responseText);
 				//window.open("/game/"+gameId+"/"+playerId, "_self");
-				window.open("/network-game.html?gameId="+gameId+"&playerId="+playerId, "_self");
+				window.open("/network-game.html?gameId="+encodeURIComponent(gameId)+"&playerId="+encodeURIComponent(playerId)+"&rules="+encodeURIComponent(rules), "_self");
 			}
 		};
 		ajax.send(JSON.stringify({
@@ -135,15 +135,15 @@ document.addEventListener("DOMContentLoaded", function(){
 	}
 
 	function createLocalAIGame(color, variant, rules){
-		window.open("/ai-game.html?playerColor="+color+"&variant="+variant+"&rules="+rules);
+		window.open("/ai-game.html?playerColor="+encodeURIComponent(color)+"&variant="+encodeURIComponent(variant)+"&rules="+encodeURIComponent(rules));
 	}
 
 	function createLocalGame(variant, rules){
-		window.open("/local-game.html?variant="+variant+"&rules="+rules);
+		window.open("/local-game.html?variant="+encodeURIComponent(variant)+"&rules="+encodeURIComponent(rules));
 	}
 
 	function createBoardEditSession(variant){
-		window.open("/tafl-board-editor.html?variant="+variant);
+		window.open("/tafl-board-editor.html?variant="+encodeURIComponent(variant));
 	}
 
 });

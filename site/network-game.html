@@ -4,9 +4,13 @@
 		<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon"/>
 		<meta charset="utf-8">
 		<title>Tafl Games</title>
-		<script src="todo_TaflBoard.js"></script>
-		<script src="todo_TaflRenderer.js"></script>
-		<script src="todo_TaflGameNetwork.js"></script>
+		<script src="TaflBoard.js"></script>
+		<script src="TaflRenderer.js"></script>
+		<script src="TaflGameNetwork.js"></script>
+		<script src="EaldfaederRules.js"></script>
+		<script src="FetlarRules.js"></script>
+		<script src="CopenhagenRules.js"></script>
+		<script src="ClevelandRules.js"></script>
 		<script>
 			document.addEventListener("DOMContentLoaded", function(){
 				//var board = new TaflBoard(TaflBoard.BRANDUBH);
@@ -30,6 +34,7 @@
 				var gameId = url.searchParams.get("gameId");
 				var playerId = url.searchParams.get("playerId");
 				var isJoining = url.searchParams.get("j");
+				var rules = url.searchParams.get("rules");
 				console.log("gameId: "+gameId);
 				console.log("playerId: "+playerId);
 
@@ -38,7 +43,7 @@
 					window.location.replace("/");
 				}
 
-				var localGame = new TaflGameNetwork(document.getElementById("canvas"), gameId, playerId, uiUpdater);
+				var localGame = new TaflGameNetwork(document.getElementById("canvas"), gameId, playerId, resolveRuleSet(rules), uiUpdater);
 				
 				if(!isJoining){
 					var shareLink = document.getElementById("shareable-join-link");
@@ -54,7 +59,20 @@
 					}
 				}
 
-				
+				function resolveRuleSet(value){
+					switch(value){
+						case "fetlar":
+							return new FetlarRules();
+						case "copenhagen":
+							return new CopenhagenRules();
+						case "ealdfaeder":
+							return new EaldfaederRules();
+						case "cleveland":
+						default:
+							return new ClevelandRules();
+					}
+				}
+
 			});
 		</script>
 	</head>

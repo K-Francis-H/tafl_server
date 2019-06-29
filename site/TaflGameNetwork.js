@@ -1,4 +1,4 @@
-function TaflGameNetwork(canvas, /*playerColor,*/  /*, opponentType*/ gameId, playerId, uiUpdateCallback){
+function TaflGameNetwork(canvas, /*playerColor,*/  /*, opponentType*/ gameId, playerId, rules, uiUpdateCallback){
 	const E = 0x00;//empty
 	const W = 0x01;//white (defenders)
 	const B = 0x02;//black (attackers)
@@ -34,6 +34,7 @@ function TaflGameNetwork(canvas, /*playerColor,*/  /*, opponentType*/ gameId, pl
 	//playerColor = playerColor || B;
 
 	console.log("pid: "+playerId);
+	console.log("rules: "+rules);
 
 	
 
@@ -49,7 +50,7 @@ function TaflGameNetwork(canvas, /*playerColor,*/  /*, opponentType*/ gameId, pl
 			
 
 			//console.log(status);
-			board = new TaflBoard(status.state, status.move === "black" ? B : W);
+			board = new TaflBoard(status.state, status.move === "black" ? B : W, rules);
 			size = status.state.length;
 			renderer.draw(board, selectedPiece);
 
