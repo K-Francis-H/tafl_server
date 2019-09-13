@@ -149,7 +149,9 @@ function ClevelandRules(){
 		//if position exists and it is occupied by an ally or it a corner or it is an unoccupired kings hall then capture
 		//if(position.x+2 < size && 
 
-		move.captures = [];
+		
+		//move.captures = [];
+		move.captures = checkKingCorner3SideCapture(state, move);//will be [] if none
 
 		let position = {x : move.ex, y : move.ey};
 		//TODO seems to also capture empty spaces, not a huge deal since undo wont affect the board state in this scenario but still
@@ -174,6 +176,119 @@ function ClevelandRules(){
 			move.captures.push({x : position.x, y : position.y-1, player : state[position.x][position.y-1]});
 			state[position.x][position.y-1] = 0;
 		} 
+	}
+
+	//check for special edge capture
+	//  A
+	// AKC
+	//where A is an attacker, K is king, and C is an escape corner, if the top A has just moved its a capture
+	function checkKingCorner3SideCapture(state, move){
+		//check positions king is vulnerable in
+		let secEnd = state.length-2; //second to end
+		let end = state.length-1;
+		let captures = [];
+		
+
+		//king is in top left A
+		if( (state[0][1] & K) > 0){
+			console.log("king at tl A");
+			//king is surrounded by attackers and corner
+			console.log(state[1][1]);
+			console.log(state[2][0]);
+			console.log((state[1][1] & state[2][0] & B));
+			if( (state[1][1] & state[2][0] & B) > 0){
+				captures.push({x:0, y:1, player:K});
+				state[0][1] = 0;
+			}
+		}
+
+		//king is in top left B
+		if( (state[1][0] & K) > 0){
+			console.log("king at tl B");
+			console.log(state[1][1]);
+			console.log(state[0][2]);
+			console.log((state[1][1] & state[0][2] & B));
+			//king is surrounded by attackers and corner
+			if( (state[1][1] & state[0][2] & B) > 0){
+				captures.push({x:1, y:0, player:K});
+				state[1][0] = 0;
+			}
+		}
+
+		//king is in top right A
+		if( (state[0][secEnd] & K) > 0){
+			console.log("king at tr A");
+			//king is surrounded by attackers and corner
+			if( (state[1][secEnd] & state[0][secEnd-1] & B) > 0){
+				captures.push({x:0, y:secEnd, player:K});
+				state[0][secEnd] = 0;
+			}
+		}
+
+		//king is in top right B
+		if( (state[1][end] & K) > 0){
+			console.log("king at tr B");
+			//king is surrounded by attackers and corner
+			if( (state[1][secEnd] & state[2][end] & B) > 0){
+				captures.push({x:1, y:end, player:K});
+				state[1][end] = 0;
+			}
+		}
+
+		//king is in bottom left A
+		if( (state[secEnd][0] & K) > 0){
+			console.log("king at bl A");
+			//king is surrounded by attackers and corner
+			if( (state[secEnd][1] & state[secEnd-1][0] & B) > 0){
+				captures.push({x:secEnd, y:0, player:K});
+				state[secEnd][0] = 0;
+			}
+		}
+		
+		//king is in bottom left B
+		if( (state[end][1] & K) > 0){
+			console.log("king at bl B");
+			//king is surrounded by attackers and corner
+			if( (state[secEnd][1] & state[end][2] & B) > 0){
+				captures.push({x:end, y:1, player:K});
+				state[end][1] = 0;
+			}
+		}
+
+		//king is in bottom right A
+		if( (state[secEnd][end] & K) > 0){
+			console.log("king at br A");
+			//king is surrounded by attackers and corner
+			if( (state[secEnd][secEnd] & state[secEnd-1][end] & B) > 0){
+				captures.push({x:end, y:1, player:K});
+				state[secEnd][end] = 0;
+			}
+		}
+
+		//king is in bottom right B
+		if( (state[end][secEnd] & K) > 0){
+			console.log("king at br B");
+			//king is surrounded by attackers and corner
+			if( (state[secEnd][secEnd] & state[end][secEnd-1] & B) > 0){
+				captures.push({x:end, y:1, player:K});
+				state[end][secEnd] = 0;
+			}
+		}
+
+		return captures;
+		/*let isVulnerable =
+			//top left 
+			(state[0][1] & K) > 0 ||
+			(state[1][0] & K) > 0 ||
+			//top right
+			(state[0][secEnd] & K) > 0 ||
+			(state[1][end] & K) > 0 ||
+			//bottom left
+			(state[secEnd][0] & K) > 0 ||
+			(state[end][1] & K) > 0 ||
+			//bottom right
+			(state[secEnd][end]
+			state[end][secEnd]*/
 	}
 
 }
