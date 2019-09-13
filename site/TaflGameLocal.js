@@ -1,4 +1,4 @@
-function TaflGameLocal(canvas, /*playerColor,*/ variant, /*, opponentType*/rules){
+function TaflGameLocal(canvas, /*playerColor,*/ variant, /*, opponentType*/rules, callback){
 	const E = 0x00;//empty
 	const W = 0x01;//white (defenders)
 	const B = 0x02;//black (attackers)
@@ -26,13 +26,13 @@ function TaflGameLocal(canvas, /*playerColor,*/ variant, /*, opponentType*/rules
 	var selectedPiece = null;
 	//playerColor = playerColor || B;
 
+	callback.onTurnChange(board.getCurrentPlayer());
+
 	//local game handler
 	//TODO add indicators for the current player, win state
 	canvas.onclick = function(event){
 
-		let winner = board.isGameOver()
-		if(winner){
-			console.log(winner+" wins");
+		if(board.isGameOver()){
 			return;
 		}
 
@@ -71,7 +71,12 @@ function TaflGameLocal(canvas, /*playerColor,*/ variant, /*, opponentType*/rules
 				player : board.getCurrentPlayer()
 			});
 			selectedPiece = null;
-			//TODO logic for determining if the game is over/won
+			callback.onTurnChange(board.getCurrentPlayer());
+			let winner = board.isGameOver()
+			if(winner){
+				console.log(winner+" wins");
+				callback.onGameOver(winner);
+			}
 		}else{
 			selectedPiece = null;
 		}

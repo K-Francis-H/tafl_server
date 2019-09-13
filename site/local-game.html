@@ -20,15 +20,41 @@
 				var url = new URL(document.URL);
 				var variant = url.searchParams.get("variant");
 				var rules = resolveRuleSet(url.searchParams.get("rules"));
+
+				document.getElementById("playing-as").innerText = "Local game";
+				//handles sending back game state data for UI display
+				var callback = {
+					//never used by local games
+					setPlayer : function(player){
+						document.getElementById("playing-as").innerText = "Playing as "+resolvePlayer(player, false);
+					},
+
+					onGameOver : function(winner){
+						document.getElementById("to-play").innerText = resolvePlayer(winner, true)+" wins!";
+					},
+	
+					onTurnChange : function(player){
+						document.getElementById("to-play").innerText = resolvePlayer(player, true)+" to play";
+					}
+				};
+
 				if(variant){
 					variant = variant.toUpperCase();
-					var localGame = new TaflGameLocal(document.getElementById("canvas"), TaflBoard[variant], rules);
+					var localGame = new TaflGameLocal(document.getElementById("canvas"), TaflBoard[variant], rules, callback);
 				}else{
 					//bad...
 					//redirect to main page
 					window.location.replace("/");
 				}
 			});
+
+			function resolvePlayer(player, isUppercase){
+				switch(player){
+					case B: return isUppercase ? "Black" : "black";
+					case W: return isUppercase ? "White" : "white";
+					default: return "???";
+				}
+			}
 
 			function resolveRuleSet(value){
 				switch(value){
