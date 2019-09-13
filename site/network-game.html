@@ -43,7 +43,7 @@
 					window.location.replace("/");
 				}
 
-				var localGame = new TaflGameNetwork(document.getElementById("canvas"), gameId, playerId, resolveRuleSet(rules), uiUpdater);
+				var netGame = new TaflGameNetwork(document.getElementById("canvas"), gameId, playerId, resolveRuleSet(rules), uiUpdater);
 				
 				if(!isJoining){
 					var shareLink = document.getElementById("shareable-join-link");

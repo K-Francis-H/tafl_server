@@ -21,6 +21,7 @@
 				var variant = url.searchParams.get("variant");
 				var rules = resolveRuleSet(url.searchParams.get("rules"));
 
+				document.getElementById("variant").innerText = capitalize(variant);
 				document.getElementById("playing-as").innerText = "Local game";
 				//handles sending back game state data for UI display
 				var callback = {
@@ -68,6 +69,10 @@
 					default:
 						return new ClevelandRules();
 				}
+			}
+
+			function capitalize(str){
+				return str[0].toUpperCase() + str.substr(1);
 			}
 		</script>
 	</head>
