@@ -23,7 +23,13 @@ app.enable("trust proxy");
 app.use(bodyParser.json());
 
 var httpServer = http.createServer(app);
-httpServer.listen(HTTP_PORT);
+
+//heroku environment logic
+var port = process.env.PORT;
+if(port == null || port == ""){
+	port = HTTP_PORT;
+}
+httpServer.listen(port);
 
 global.GAME = {
 	TAFL : "tafl"

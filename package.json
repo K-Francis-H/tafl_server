@@ -1,23 +1,21 @@
 {
-	"name":"tafl-server",
-	"version":"v0.1.0",
-	"description":"a server/client for hosting 2 player games of tafl variants",
-	"homepage":"https://github.com/K-Francis-H/tafl_server/#readme",
-	"bugs":{
-		"url":"https://github.com/K-Francis-H/tafl_server/issues"
+	"name": "tafl-server",
+	"version": "v0.1.0",
+	"description": "a server/client for hosting 2 player games of tafl variants",
+	"homepage": "https://github.com/K-Francis-H/tafl_server/#readme",
+	"bugs": {
+		"url": "https://github.com/K-Francis-H/tafl_server/issues"
 	},
-	"license":"GPL-3.0-or-later",
-	"author":{
-		"name":"Kyle Harrity"
+	"license": "GPL-3.0-or-later",
+	"author": {
+		"name": "Kyle Harrity"
 	},
-	"dependencies":{
-		"node-uuid":"*",
-		"express":"*",
-		"body-parser":"*"
+	"dependencies": {
+		"body-parser": "^1.19.0",
+		"express": "^4.17.1",
+		"node-uuid": "*"
 	},
-	"scripts":{
-		"start":"node tafl_server.js"
+	"scripts": {
+		"start": "node tafl_server.js"
 	}
 }
-	
-	 
