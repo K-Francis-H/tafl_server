@@ -11,6 +11,7 @@
 		<script src="FetlarRules.js"></script>
 		<script src="CopenhagenRules.js"></script>
 		<script src="ClevelandRules.js"></script>
+		<script src="TaflNotator.js"></script>
 		<script>
 			document.addEventListener("DOMContentLoaded", function(){
 				//var board = new TaflBoard(TaflBoard.BRANDUBH);
@@ -20,6 +21,8 @@
 				var url = new URL(document.URL);
 				var variant = url.searchParams.get("variant");
 				var rules = resolveRuleSet(url.searchParams.get("rules"));
+	
+				var notator = new TaflNotator(TaflBoard[variant], variant, rules, "notation");
 
 				document.getElementById("variant").innerText = capitalize(variant);
 				document.getElementById("playing-as").innerText = "Local game";
@@ -36,6 +39,10 @@
 	
 					onTurnChange : function(player){
 						document.getElementById("to-play").innerText = resolvePlayer(player, true)+" to play";
+					},
+
+					onMove : function(move){
+						notator.addMove(move);
 					}
 				};
 
@@ -79,14 +86,17 @@
 	<body>
 		<a href="/">New Game</a>
 		<center>
-			<h1 id="variant"></h1>
-			<h3 id="playing-as"></h3>
-			<h3 id="to-play"></h3>
-			<div id="game-container">
+			<div id="game-container" style="display:inline-block">
+				<h1 id="variant"></h1>
+				<h3 id="playing-as"></h3>
+				<h3 id="to-play"></h3>
 				<canvas id="canvas" draggable="true" width=800 height=800></canvas>
 				<h4 id="share-label" style="display:none;">Join Link:</h4>
 				<input id="shareable-join-link" readonly style="display:none;"/>
 				<button id="copy-button" style="display:none;">Copy</button>
+			</div>
+			<div id=notation style="display:inline-block;vertical-align:top">
+				<!--<p>what the fuck 1</p><p>what the fuck 2</p><p>what the fuck 3</p><p>what the fuck 4</p><p>what the fuck 5</p>-->
 			</div>
 		</center>
 	</body>

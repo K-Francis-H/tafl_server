@@ -71,6 +71,7 @@ function TaflGameLocal(canvas, /*playerColor,*/ variant, /*, opponentType*/rules
 				player : board.getCurrentPlayer()
 			});
 			selectedPiece = null;
+			callback.onMove(board.getLastMove());
 			callback.onTurnChange(board.getCurrentPlayer());
 			let winner = board.isGameOver()
 			if(winner){

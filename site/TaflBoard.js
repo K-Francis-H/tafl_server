@@ -272,6 +272,7 @@ function TaflBoard(variant, player, rules){
 	function checkCaptures(move){
 		//TODO use in the (done)makeMove, simulateMove, and (done)undo functions (move needs to store capture metadata in an array)
 		let color = (state[move.ex][move.ey] & PIECE_MASK) === B ? B : WHITE_MASK;
+		let oppColor = color === B ? WHITE_MASK : B;
 		//to make sure its not an empty square somehow
 		if( (state[move.ex][move.ey] & PIECE_MASK) === 0){
 			return;
@@ -287,22 +288,23 @@ function TaflBoard(variant, player, rules){
 		let position = {x : move.ex, y : move.ey};
 		//TODO seems to also capture empty spaces, not a huge deal since undo wont affect the board state in this scenario but still
 		//if capture help position exists AND (adjacent position is empty AND capture help position is empty AND KINGS_HALL OR CORNER OR allied piece
-		if(position.x+2 < size && (state[position.x+1][position.y] & color) === 0 && ( ( (state[position.x+2][position.y] & PIECE_MASK) === 0 && isKingsHall(position.x+2,position.y) || isCorner(position.x+2,position.y) ) || (state[position.x+2][position.y] & color) > 0) ){
+		if(position.x+2 < size && (state[position.x+1][position.y] & oppColor) > 0 && ( ( (state[position.x+2][position.y] & PIECE_MASK) === 0 && isKingsHall(position.x+2,position.y) || isCorner(position.x+2,position.y) ) || (state[position.x+2][position.y] & color) > 0) ){
 			console.log("x+");
 			move.captures.push({x : position.x+1, y : position.y, player : state[position.x+1][position.y]});
 			state[position.x+1][position.y] = 0;
 		}
-		if(position.x-2 >= 0 && (state[position.x-1][position.y] & color) === 0 && ( ( (state[position.x-2][position.y] & PIECE_MASK) === 0 && isKingsHall(position.x-2,position.y) || isCorner(position.x-2,position.y) ) || (state[position.x-2][position.y] & color) > 0) ){
+		if(position.x-2 >= 0 && ((state[position.x-1][position.y] & oppColor) > 0) && ( ( (state[position.x-2][position.y] & PIECE_MASK) === 0 && isKingsHall(position.x-2,position.y) || isCorner(position.x-2,position.y) ) || (state[position.x-2][position.y] & color) > 0) ){
 			console.log("x-");
+			console.log("opc: "+oppColor);
 			move.captures.push({x : position.x-1, y : position.y, player : state[position.x-1][position.y]});
 			state[position.x-1][position.y] = 0;
 		}
-		if(position.y+2 < size && (state[position.x][position.y+1] & color) === 0 && ( ( (state[position.x][position.y+2] & PIECE_MASK) === 0 && isKingsHall(position.x,position.y+2) || isCorner(position.x,position.y+2) ) || (state[position.x][position.y+2] & color) > 0) ){
+		if(position.y+2 < size && (state[position.x][position.y+1] & oppColor) > 0 && ( ( (state[position.x][position.y+2] & PIECE_MASK) === 0 && isKingsHall(position.x,position.y+2) || isCorner(position.x,position.y+2) ) || (state[position.x][position.y+2] & color) > 0) ){
 			console.log("y+");
 			move.captures.push({x : position.x, y : position.y+1, player : state[position.x][position.y+1]});
 			state[position.x][position.y+1] = 0;
 		}
-		if(position.y-2 >= 0 && (state[position.x][position.y-1] & color) === 0 && ( ( (state[position.x][position.y-2] & PIECE_MASK) === 0 && isKingsHall(position.x,position.y-2) || isCorner(position.x,position.y-2) ) || (state[position.x][position.y-2] & color) > 0) ){
+		if(position.y-2 >= 0 && (state[position.x][position.y-1] & oppColor) > 0 && ( ( (state[position.x][position.y-2] & PIECE_MASK) === 0 && isKingsHall(position.x,position.y-2) || isCorner(position.x,position.y-2) ) || (state[position.x][position.y-2] & color) > 0) ){
 			console.log("y-");
 			move.captures.push({x : position.x, y : position.y-1, player : state[position.x][position.y-1]});
 			state[position.x][position.y-1] = 0;
