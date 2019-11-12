@@ -1,0 +1,21 @@
+ol {
+	border: 2px solid blue;
+	background-color: lightblue;
+	list-style-position: inside;
+	display: table;
+	/*margin-left: 0;
+	padding-left: 0;
+	list-style: none;*/
+}
+li {
+	margin: 5px;
+	background-color: lightyellow;
+	/*display: table-row
+	counter-increment: table-ol
+
+	&:before
+		content: counter(table-ol) "."
+		display: table-cell
+		padding-right: 0.4em
+		text-align: right*/
+}

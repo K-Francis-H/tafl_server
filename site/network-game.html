@@ -4,6 +4,7 @@
 		<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon"/>
 		<meta charset="utf-8">
 		<title>Tafl Games</title>
+		<link rel="stylesheet" type="text/css" href="style/notation.css">
 		<script src="TaflBoard.js"></script>
 		<script src="TaflRenderer.js"></script>
 		<script src="TaflGameNetwork.js"></script>
@@ -11,6 +12,7 @@
 		<script src="FetlarRules.js"></script>
 		<script src="CopenhagenRules.js"></script>
 		<script src="ClevelandRules.js"></script>
+		<!--<script src="TaflNotator.js"></script>-->
 		<script>
 			document.addEventListener("DOMContentLoaded", function(){
 				//var board = new TaflBoard(TaflBoard.BRANDUBH);
@@ -19,6 +21,8 @@
 				//var editor = new TaflBoardEditor(document.getElementById("canvas"), TaflBoard.BRANDUBH);
 
 				function uiUpdater(status){
+					console.log("UPDATING STATUS UI");
+					console.log(status);
 					document.getElementById("variant").innerText = status.variant;
 					if(!status.isGameOver){
 						document.getElementById("playing-as").innerText = "Playing as "+status.playerColor;
@@ -27,6 +31,26 @@
 						document.getElementById("playing-as").innerText = "Playing as "+status.playerColor;
 						document.getElementById("to-play").innerText = status.winColor+" wins!";
 					}
+
+					//TODO check if last move is unchanged, if so do nothing, else update notation listing with newest move
+					/*if(notator === null){
+						notator = new TaflNotator(status.state, status.variant, rules, "notation");
+					}else{
+
+					}*/
+					
+					//clear notation
+					if(status.notation && status.notation.length > 0){
+						document.getElementById("notation").innerHTML = joinNotation(status.notation);
+					}
+				}
+
+				function joinNotation(notation){
+					var str = "";
+					for(var i=0; i < notation.length; i++){
+						str += "<li>"+notation[i]+"</li>";
+					}
+					return str;
 				}
 
 				//TODO get gameId playerId from url
@@ -82,11 +106,15 @@
 			<h1 id="variant"></h1>
 			<h3 id="playing-as"></h3>
 			<h3 id="to-play"></h3>
-			<div id="game-container">
+			<div id="game-container" style="display:inline-block">
 				<canvas id="canvas" draggable="true" width=800 height=800></canvas>
 				<h4 id="share-label" style="display:none;">Join Link:</h4>
 				<input id="shareable-join-link" readonly style="display:none;"/>
 				<button id="copy-button" style="display:none;">Copy</button>
+			</div>
+			<div style="display:inline-block;vertical-align:top">
+				<ol id=notation></ol>
+				<!--<p>what the fuck 1</p><p>what the fuck 2</p><p>what the fuck 3</p><p>what the fuck 4</p><p>what the fuck 5</p>-->
 			</div>
 		</center>
 	</body>

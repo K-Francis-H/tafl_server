@@ -41,6 +41,9 @@ function TaflGameNetwork(canvas, /*playerColor,*/  /*, opponentType*/ gameId, pl
 	//setup polling... TODO works but last move only works for white????
 	let loop = setInterval(function(){
 		getStatus(gameId, playerId, function(status){
+
+			console.log(status);
+
 			if(status.token){
 				gameInfo.moveToken = status.token;
 			}
@@ -61,7 +64,8 @@ function TaflGameNetwork(canvas, /*playerColor,*/  /*, opponentType*/ gameId, pl
 					playerColor : status.color,
 					moveColor : status.move,
 					isGameOver : (status.isGameOver > 0),
-					winColor : (status.isGameOver === B ? "black" : "white")
+					winColor : (status.isGameOver === B ? "black" : "white"),
+					notation : status.notation
 					//TODO stalemate
 				});
 			}

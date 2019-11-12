@@ -3,6 +3,7 @@ const uuid = require("node-uuid");
 //rules
 const rules = require("./Rules.js");
 const TaflBoard = require("./TaflBoard.js").TaflBoard;
+const TaflNotator = require("./TaflNotator.js");
 
 
 
@@ -274,6 +275,9 @@ function Game(creatorColor, variant, rules, rulesName){
 
 	var players = [];
 
+	var moves = [];
+	var notator = new TaflNotator(INITIAL_STATE[variant], variant, rules);
+
 	var playerOne = {
 		color : creatorColor,
 		id : uuid.v4()
@@ -347,6 +351,8 @@ function Game(creatorColor, variant, rules, rulesName){
 			//states.push(JSON.parse(JSON.stringify(state)));
 			board.makeMove(move);
 			updateMoveToken();
+			moves.push(move);
+			notator.addMove(move);
 			return true;
 		}else{
 			return false;
@@ -363,7 +369,8 @@ function Game(creatorColor, variant, rules, rulesName){
 				token : moveToken.id,
 				state : board.getAnnotatedBoard(),//states[states.length-1],
 				color : player.color,
-				isGameOver : board.isGameOver()
+				isGameOver : board.isGameOver(),
+				notation : notator.getNotation()
 			};
 		}else{
 			//dont give them the token, its not their turn
@@ -372,7 +379,8 @@ function Game(creatorColor, variant, rules, rulesName){
 				move : moveToken.color,
 				state : board.getAnnotatedBoard(),//states[states.length-1],
 				color : player.color,
-				isGameOver : board.isGameOver()
+				isGameOver : board.isGameOver(),
+				notation : notator.getNotation()
 			};
 		}
 		//if game has completed wait until both players are notified then destroy this game
@@ -425,6 +433,10 @@ function Game(creatorColor, variant, rules, rulesName){
 		|| i === size-1 && j === 0
 		|| i === size-1 && j === size-1
 		|| i === 0 && j === size-1
+	}
+
+	function getLastMove(){
+		return moves[moves.length-1];
 	}
 }
 

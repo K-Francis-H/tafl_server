@@ -9,6 +9,15 @@ function TaflNotator(initialBoard, variant, rules, notationId){
 	this.addMove = function(move){
 		var moveString = genCyningstanString(move);
 		notDiv.innerHTML += "<li>"+moveString+"</li>";
+		moveStringsCyningstan.push(moveString);
+	};
+
+	this.parseMove = function(move){
+		return genCyningstanString(move);
+	};
+
+	this.lastMove = function(move){
+		return moveStringsCyningstan[moveStringsCyningstan.length-1];
 	};
 
 	function genCyningstanString(move){
