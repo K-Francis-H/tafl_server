@@ -65,7 +65,7 @@ function EaldfaederRules(){
 			//if adjacent to kings hall and surrounded on 3 sided -> captured
 			//if surrounded on four sides -> captured
 			checkKingCaptures(state, move);
-			return;
+			//return;
 		}
 
 		//function checkKingsHall

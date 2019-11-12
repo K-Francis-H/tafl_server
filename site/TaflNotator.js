@@ -8,7 +8,7 @@ function TaflNotator(initialBoard, variant, rules, notationId){
 
 	this.addMove = function(move){
 		var moveString = genCyningstanString(move);
-		notDiv.innerHTML += "<p>"+moveString+"</p>";
+		notDiv.innerHTML += "<li>"+moveString+"</li>";
 	};
 
 	function genCyningstanString(move){

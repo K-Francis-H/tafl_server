@@ -4,6 +4,29 @@
 		<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon"/>
 		<meta charset="utf-8">
 		<title>Tafl Games</title>
+		<style>
+			ol {
+				border: 2px solid blue;
+				background-color: lightblue;
+				list-style-position: inside;
+				display: table;
+				/*margin-left: 0;
+				padding-left: 0;
+				list-style: none;*/
+			}
+			li {
+				margin: 5px;
+				background-color: lightyellow;
+				/*display: table-row
+				counter-increment: table-ol
+
+				&:before
+					content: counter(table-ol) "."
+					display: table-cell
+					padding-right: 0.4em
+					text-align: right*/
+			}
+		</style>
 		<script src="TaflBoard.js"></script>
 		<script src="TaflRenderer.js"></script>
 		<script src="TaflGameLocal.js"></script>
@@ -95,7 +118,8 @@
 				<input id="shareable-join-link" readonly style="display:none;"/>
 				<button id="copy-button" style="display:none;">Copy</button>
 			</div>
-			<div id=notation style="display:inline-block;vertical-align:top">
+			<div style="display:inline-block;vertical-align:top">
+				<ol id=notation></ol>
 				<!--<p>what the fuck 1</p><p>what the fuck 2</p><p>what the fuck 3</p><p>what the fuck 4</p><p>what the fuck 5</p>-->
 			</div>
 		</center>
