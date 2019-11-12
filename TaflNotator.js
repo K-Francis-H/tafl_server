@@ -1,33 +1,32 @@
-function TaflNotator(initialBoard, variant, rules, notationId){
+module.exports = function(initialBoard, variant, rules){
 	const LETTERS = "ABCDEFGHIJKLMNOPQRS"; //up to 19 for Alea Evangelii
 
 	moveStringsCyningstan = [];
 	moveStringsOpenTafl = [];
 
-	var notDiv = document.getElementById(notationId);
+	//var notDiv = document.getElementById(notationId);
 
 	this.addMove = function(move){
 		var moveString = genCyningstanString(move);
-		notDiv.innerHTML += "<li>"+moveString+"</li>";
+		//notDiv.innerHTML += "<li>"+moveString+"</li>";
 		moveStringsCyningstan.push(moveString);
-	};
-
-	this.undo = function(move){
-		moveStringsCyningstan.pop();
-		var str = "";
-		for(let i=0; i < moveStringsCyningstan.length; i++){
-			str += "<li>"+moveStringsCyningstan[i]+"</li>";
-		}
-		notDiv.innerHTML = str;
 	};
 
 	this.parseMove = function(move){
 		return genCyningstanString(move);
 	};
 
+	this.undo = function(move){
+		moveStringsCyningstan.pop(); //just throw out last move
+	};
+
 	this.lastMove = function(move){
 		return moveStringsCyningstan[moveStringsCyningstan.length-1];
 	};
+
+	this.getNotation = function(){
+		return moveStringsCyningstan;
+	}
 
 	function genCyningstanString(move){
 		//+1 to 1 index the board not 0 index
