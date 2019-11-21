@@ -1,6 +1,6 @@
 ol {
-	border: 2px solid blue;
-	background-color: lightblue;
+	border: 2px solid #DAA520;
+	background-color: #B58863;
 	list-style-position: inside;
 	display: table;
 	/*margin-left: 0;
@@ -9,7 +9,7 @@ ol {
 }
 li {
 	margin: 5px;
-	background-color: lightyellow;
+	background-color: #F0D9B5;
 	/*display: table-row
 	counter-increment: table-ol
 
@@ -18,4 +18,13 @@ li {
 		display: table-cell
 		padding-right: 0.4em
 		text-align: right*/
+}
+.play-button{
+	border:2px solid goldenrod;
+	border-radius : 10px;
+	background-color : #F0D9B5;
+	color : #B58863;
+	font-weight : bold;
+	font-size : 18pt;
+	cursor : pointer;
 }
