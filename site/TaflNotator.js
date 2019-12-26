@@ -29,6 +29,10 @@ function TaflNotator(initialBoard, variant, rules, notationId){
 		return moveStringsCyningstan[moveStringsCyningstan.length-1];
 	};
 
+	this.getMoveNotationsCyningstan = function(){
+		return moveStringsCyningstan.join("\n");
+	};
+
 	function genCyningstanString(move){
 		//+1 to 1 index the board not 0 index
 		var start = LETTERS[move.sx]+(move.sy+1);
