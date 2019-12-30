@@ -69,6 +69,25 @@
 
 				var netGame = new TaflGameNetwork(document.getElementById("canvas"), gameId, playerId, resolveRuleSet(rules), uiUpdater);
 				
+				//setup copy state/notation butons
+				var copyBoardStateButton = document.getElementById("board-state-button");
+				var copyBoardNotationButton = document.getElementById("notation-button");
+
+				//TODO boardstate may require https since its not displayed on screen
+				//copy board notation
+				copyBoardNotationButton.onclick = function(){
+					let ta = document.createElement('textarea');
+					ta.id="ta-notation";
+					ta.style.height=0;
+					document.body.appendChild(ta);
+					ta.value = notator.getMoveNotationsCyningstan();
+					//console.log(notator.getMoveNotationsCyningstan());
+					ta.select();
+					document.execCommand("copy");
+
+					document.body.removeChild(ta);
+				};
+
 				if(!isJoining){
 					var shareLink = document.getElementById("shareable-join-link");
 					shareLink.style.display="block";
@@ -114,8 +133,8 @@
 			</div>
 			<div style="display:inline-block;vertical-align:top">
 				<ol id=notation></ol>
-				<!--TODO copy notation button-->
-				<!--TODO copy board state--> 
+				<button id=board-state-button class=play-button>Copy Board State</button>
+				<button id=notation-button class=play-button>Copy Notation</button>
 				<!--<p>what the fuck 1</p><p>what the fuck 2</p><p>what the fuck 3</p><p>what the fuck 4</p><p>what the fuck 5</p>-->
 			</div>
 		</center>
