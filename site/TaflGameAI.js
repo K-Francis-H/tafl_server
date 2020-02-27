@@ -27,10 +27,11 @@ function TaflGameAI(canvas, /*playerColor,*/ variant /*, opponentType*/, player,
 	playerColor = player === "black" ? B : W ;
 	aiColor = playerColor === W ? B : W;
 
-	ai = new MinimaxAI(3, aiColor);
+	ai = new MinimaxAI(1, aiColor);
 
 	var loop = setInterval(function(){
-		if(board.getCurrentPlayer() === aiColor  && board.isGameOver() > 0){
+		console.log("running move check: "+board.getCurrentPlayer()+" "+ aiColor);
+		if(board.getCurrentPlayer() === aiColor  && board.isGameOver() === 0){
 			board.makeMove(ai.getMove(board));
 			renderer.draw(board);
 		}

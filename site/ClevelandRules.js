@@ -15,18 +15,19 @@ function ClevelandRules(){
 	const WHITE_MASK = W | K;
 	const PIECE_MASK = BLACK_MASK | WHITE_MASK;
 
-	this.getMoves = function(player){
-		console.log(player);
+	this.getMoves = function(board, player){
+		//console.log("pl: "+player);
 		if(player != W && player != B){
 			throw "Parameter 'player' must be one of 1 (defenders) or 2 (attackers)";
 		}
 
 		let mask = player === W ? WHITE_MASK : BLACK_MASK;
 		let newMoves = [];
+		let state = board.getBoard();
 		for(var i=0; i < state.length; i++){
 			for(var j=0; j < state[i].length; j++){
 				if( (state[i][j] & mask) > 0){
-					newMoves = newMoves.concat(getMovesForPieceAtPosition(state, i,j));
+					newMoves = newMoves.concat(this.getMovesForPieceAtPosition(state, i,j));
 				}
 			}
 		}

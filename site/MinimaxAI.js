@@ -1,4 +1,5 @@
 function MinimaxAI(maxDepth, type){
+	console.log("AI type: "+type);
 	const W = 0x01;//white (defenders)
 	const B = 0x02;//black (attackers)
 
@@ -6,16 +7,20 @@ function MinimaxAI(maxDepth, type){
 	const TYPE = type;
 	const OTHER_TYPE = TYPE === W ? B : W
 
+
 	this.getMove = function(game) {
 		return minimaxInit(game);
 	}
 
 	function minimaxInit(game){
+		console.log("TYPE: "+TYPE);
+		console.log(game);
 		let isMaximizing = game.getCurrentPlayer() === TYPE;
 		let bestScore = isMaximizing ? Number.MIN_SAFE_INTEGER : Number.MAX_SAFE_INTEGER;
-		let bestMove = 0;
 		let moves = game.getMoves(TYPE); 
+		let bestMove = moves[0];
 		for(var i=0; i < moves.length; i++){
+			console.log(moves[i]);
 			//return moves[i];
 			var score = minimax(game.simulateMove(moves[i]), 1, MAX_DEPTH, Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER);
 			if(isMaximizing){
@@ -30,12 +35,13 @@ function MinimaxAI(maxDepth, type){
 				}
 			}
 		}
+		console.log("score: "+bestScore);
 		return bestMove;
 	}
 
 	function minimax(game, depth, maxDepth, alpha, beta){
-		if(game.isGameOver() || depth === maxDepth){
-			return evaluate(game, game.getLastMovePlayer());//TODO maybe use last player
+		if(game.isGameOver() == game.getCurrentPlayer() || depth === maxDepth){
+			return evaluate(game, game.getCurrentPlayer());//TODO maybe use last player
 		}
 
 		var isMaximizing = game.getCurrentPlayer() === TYPE;
@@ -48,14 +54,14 @@ function MinimaxAI(maxDepth, type){
 				bestScore = Math.max(score, bestScore);
 				alpha = Math.max(alpha, bestScore);
 				if(beta <= alpha){
-					console.log("alpha break");
+					//console.log("alpha break");
 					break;
 				}
 			}else{
 				bestScore = Math.min(score, bestScore);
 				beta = Math.min(beta, bestScore);
 				if(beta <= alpha){
-					console.log("beta break");
+					//console.log("beta break");
 					break;
 				}
 			}
@@ -64,8 +70,45 @@ function MinimaxAI(maxDepth, type){
 	}
 
 	function evaluate(game, player){
-		//TODO
-		return getRandomInt(0,10);
+		if(game.isGameOver() == player){
+			console.log("WIN STATE:");
+			console.log(game.getBoard());
+			
+			return 1000;
+		}
+		return evalWhite(game, player);
+	}
+
+	function evalWhite(game, player){
+		//TODO heuristics:
+		//king is on edge +
+		//king is in danger --- (check if next move by black can win game)
+		//king/player sets up capture +	?
+		//player blocks opponent from stopping escape + ?
+		//is up in pieces ++ (general advantage)
+		//has non king piece on edge +
+
+		let score = 0;
+		let lm = game.getLastMove();
+		if(lm.captures.length > 0){
+			console.log("CAPTURE ON WHITE MOVE "+lm.captures.length);
+			score += 100 * lm.captures.length;
+		}
+		return score + getRandomInt(0,10);
+	}
+
+	function evalBlack(game, player){
+		//TODO heuristics:
+		//endangers king ++
+		//endangers piece +
+		//is up in pieces + (gneral advantage, meaningless until late game, since black always starts with 2x pieces)
+		let score = 0;
+		let lm = game.getLastMove();
+		if(lm.captures.length > 0){
+			console.log("CAPTURE ON BLACK MOVE "+lm.captures.length);
+			score += 100 * lm.captures.length;
+		}
+		return score + getRandomInt(0,10);
 	}
 
 	function getRandomInt(min, max) {

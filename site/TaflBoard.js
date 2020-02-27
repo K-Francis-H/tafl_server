@@ -42,7 +42,7 @@ function TaflBoard(variant, player, rules){
 				}
 			}
 		}*/
-		return rules.getMoves();//newMoves;
+		return rules.getMoves(this, player);//newMoves;
 	};
 
 	//this.getMovesForSelectedPiece = function(i,j){
@@ -152,7 +152,7 @@ function TaflBoard(variant, player, rules){
 
 	//to see what a move does without changing the underlying game state
 	this.simulateMove = function(move){
-		console.log(move);
+		//console.log(move);
 		let clone = JSON.parse(JSON.stringify(state));
 		let simulatedState = new TaflBoard(clone, move.player, rules);//TODO or maybe use the currentPlayer value
 		simulatedState.makeMove(move);
@@ -162,8 +162,8 @@ function TaflBoard(variant, player, rules){
 	//to actually perform a move and effect the state stack
 	this.makeMove = function(move){
 		//TODO check if move is valid
-		console.log("making move: ");
-		console.log(move);
+		//console.log("making move: ");
+		//console.log(move);
 
 		if(isGameOver()){
 			//return;
@@ -176,8 +176,8 @@ function TaflBoard(variant, player, rules){
 		state[move.sx][move.sy] = E;
 		rules.checkCaptures(state, move);
 		moves.push(move);
-		console.log("after");
-		console.log(move);
+		//console.log("after");
+		//console.log(move);
 		currentPlayer = currentPlayer === B ? W : B;
 	};
 

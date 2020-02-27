@@ -36,10 +36,11 @@ function EaldfaederRules(){
 
 		let mask = player === W ? WHITE_MASK : BLACK_MASK;
 		let newMoves = [];
+		let state = taflBoard.getBoard();
 		for(var i=0; i < state.length; i++){
 			for(var j=0; j < state[i].length; j++){
 				if( (state[i][j] & mask) > 0){
-					newMoves = newMoves.concat(getMovesForPieceAtPosition(taflBoard.getBoard(), i,j));
+					newMoves = newMoves.concat(this.getMovesForPieceAtPosition(taflBoard.getBoard(), i,j));
 				}
 			}
 		}
