@@ -4,6 +4,7 @@ function TaflBoard(variant, player, rules){
 	const B = 0x02;//black (attackers)
 	const K = 0x04;//white king
 
+	//TODO probably need multiple constructors else I lose move history when I simulate a move
 
 	//flags
 	const SELECTED = 8;
@@ -264,6 +265,17 @@ function TaflBoard(variant, player, rules){
 
 	function isKing(i,j){
 		return (state[i][j] & K) > 0;
+	}
+
+	this.findKing = function(){
+		for(let i=0; i < state.length; i++){
+			for(let j=0; j < state[0].length; j++){
+				if(isKing(i,j)){
+					return {x:i,y:j};
+				}
+			}
+		}
+		return null;
 	}
 
 	//should be called AFTER performing the move on the game state

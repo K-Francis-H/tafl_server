@@ -14,7 +14,7 @@ function TaflGameAI(canvas, /*playerColor,*/ variant /*, opponentType*/, player,
 	const WHITE_MASK = W | K;
 	const PIECE_MASK = BLACK_MASK | WHITE_MASK;
 
-	var renderer = new TaflRenderer(canvas);
+	var renderer = new TaflRenderer(canvas, null, true);
 	var board = new TaflBoard(variant, null, rules);
 
 	var width = canvas.width;
@@ -27,7 +27,7 @@ function TaflGameAI(canvas, /*playerColor,*/ variant /*, opponentType*/, player,
 	playerColor = player === "black" ? B : W ;
 	aiColor = playerColor === W ? B : W;
 
-	ai = new MinimaxAI(1, aiColor);
+	ai = new MinimaxAI(4, aiColor);
 
 	var loop = setInterval(function(){
 		console.log("running move check: "+board.getCurrentPlayer()+" "+ aiColor);

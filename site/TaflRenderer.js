@@ -1,4 +1,4 @@
-function TaflRenderer(canvas, humanPlayerColor){
+function TaflRenderer(canvas, humanPlayerColor, isDebug){
 	const DARK = "#B58863";//"#000";
 	const LIGHT = "#F0D9B5";//"#FFF";
 	const YELLOW = "#DAA520";//for kings hall and exits
@@ -102,6 +102,13 @@ function TaflRenderer(canvas, humanPlayerColor){
 				//ctx.fillText(FILE_R[i]+RANK[state.length-j],
 				//	     i*tileSizeX+0.45*tileSizeX, 
 				//	     j*(tileSizeY)+tileSizeY/*-0.45*tileSizeY*/);
+
+				//debug annotations
+				if(isDebug){
+					ctx.fillStyle = "green";
+					ctx.fillText("(i:"+i+",j:"+j+")", i*tileSizeX, j*tileSizeY+tileSizeY/2);
+					ctx.fillStyle = lastStyle;
+				}
 			}
 		}
 				

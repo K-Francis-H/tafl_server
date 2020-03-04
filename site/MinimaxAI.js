@@ -41,7 +41,7 @@ function MinimaxAI(maxDepth, type){
 
 	function minimax(game, depth, maxDepth, alpha, beta){
 		if(game.isGameOver() == game.getCurrentPlayer() || depth === maxDepth){
-			return evaluate(game, game.getCurrentPlayer());//TODO maybe use last player
+			return evaluate(game, game.getCurrentPlayer(), depth);//TODO maybe use last player
 		}
 
 		var isMaximizing = game.getCurrentPlayer() === TYPE;
@@ -69,17 +69,30 @@ function MinimaxAI(maxDepth, type){
 		return bestScore;
 	}
 
-	function evaluate(game, player){
-		if(game.isGameOver() == player){
+	//TODO determine sign based on our type from the constructor, we're always positive they're negative
+	function evaluate(game, player, depth){
+		let result = game.isGameOver();
+		let opponent = game.getLastMovePlayer();
+		if(result === player){
 			console.log("WIN STATE:");
 			console.log(game.getBoard());
 			
-			return 1000;
+			return 1000 * (MAX_DEPTH - depth); //increase incentive for winning asap not in 7 turns
 		}
-		return evalWhite(game, player);
+		else if(result === opponent){
+			console.log("LOSS STATE:");
+			return -1000 * (MAX_DEPTH - depth);
+		}
+
+		if(player === W){
+			return evalWhite(game, player, depth);
+		}
+		else{
+			return evalBlack(game, player, depth);
+		}
 	}
 
-	function evalWhite(game, player){
+	function evalWhite(game, player, depth){
 		//TODO heuristics:
 		//king is on edge +
 		//king is in danger --- (check if next move by black can win game)
@@ -92,12 +105,145 @@ function MinimaxAI(maxDepth, type){
 		let lm = game.getLastMove();
 		if(lm.captures.length > 0){
 			console.log("CAPTURE ON WHITE MOVE "+lm.captures.length);
-			score += 100 * lm.captures.length;
+			score += 100 * lm.captures.length * (MAX_DEPTH - depth);
 		}
+
+		let state = game.getBoard();
+		let kp = game.findKing();	//king's position: {x,y}
+		//TODO this is somewhat rule dependent, I'm checking Cleveland rules (2 attacker capture on king)
+		//TODO also completely ignores the class of attacks that slide across instead of towards the king
+		//determine if king is in imminent danger
+			//return negative number for this
+		
+		/*if(state[kp.x+1] && state[kp.x+1][kp.y] === B){
+			//check below column to see if black piece is in position to kill on next move
+			let i = kp.x-1;
+			let underAttack = false;
+			while(state[i] && !underAttack){
+				underAttack = (state[i][kp.y] === B);
+				i--;
+			}
+			score += underAttack ? -100 : 0;
+			
+			//now check side swipe(s) above/below
+			let j = kp.y+1;
+			underAttack = false;
+			while(state[kp.x-1] && !underAttack){
+				underAttack = (state[kp.x][j] === B);
+				j++;
+			}
+			score += underAttack ? -100 : 0;
+
+			j = kp.y-1;
+			underAttack = false;
+			while(state[kp.x-1] && !underAttack){
+				underAttack = (state[kp.x][j] === B);
+				j--;
+			}
+			score += underAttack ? -100 : 0;
+		}
+		else if(state[kp.x-1] && state[kp.x-1][kp.y] === B){
+			let i = kp.x+1;
+			let underAttack = false;
+			while(state[i] && !underAttack){
+				underAttack = (state[i][kp.y] === B);
+				i++;
+			}
+			score += underAttack ? -100 : 0;
+
+			//now check side swipe(s) above/below
+			let j = kp.y+1;
+			underAttack = false;
+			while(state[kp.x+1] && !underAttack){
+				underAttack = (state[kp.x][j] === B);
+				j++;
+			}
+			score += underAttack ? -100 : 0;
+
+			j = kp.y-1;
+			underAttack = false;
+			while(state[kp.x+1] && !underAttack){
+				underAttack = (state[kp.x][j] === B);
+				j--;
+			}
+			score += underAttack ? -100 : 0;
+		}
+		else if(state[kp.x][kp.y+1] === B){
+			let j = kp.y-1;
+			let underAttack = false;
+			while(state[kp.x][j] && !underAttack){
+				underAttack = (state[kp.x][j] === B);
+				j--;
+			}
+			score += underAttack ? -100 : 0;
+
+			let i = kp.x+1;
+			underAttack = false;
+			while(state[i] && !underAttack){
+				underAttack = (state[i][kp.y-1] === B);
+				i++;
+			}
+
+			i = kp.x-1;
+			underAttack = false;
+			while(state[i] && !underAttack){
+				underAttack = (state[i][kp.y-1] === B);
+				i--;
+			}
+			
+		}
+		else if(state[kp.x][kp.y-1] === B){
+			let j = kp.y+1;
+			let underAttack = false;
+			while(state[kp.x][j] && !underAttack){
+				underAttack = (state[kp.x][j] === B);
+				j++;
+			}
+			score += underAttack ? -100 : 0;
+	
+			let i = kp.x+1;
+			underAttack = false;
+			while(state[i] && !underAttack){
+				underAttack = (state[i][kp.y+1] === B);
+				i++;
+			}
+
+			i = kp.x-1;
+			underAttack = false;
+			while(state[i] && !underAttack){
+				underAttack = (state[i][kp.y+1] === B);
+				i--;
+			}
+		}*/
+
+		//determine if king has imminent win, or access to 1 or more edges
+			//return multiplier		
+
+		//find king
+		//if he has access to the edge or corners its good
+		
+
 		return score + getRandomInt(0,10);
 	}
 
-	function evalBlack(game, player){
+	
+	/*function isBlackTop(state, x, y){
+		return state[x+1] && state[x+1][y] === B;	
+	}
+
+	function isBlackRight(state, x, y){
+		return state[x][y+1] && state
+	}
+
+	function isBlackLeft(state, x, y){
+
+	}
+
+	function isBlackBelow(state, x, y){
+
+	}*/
+
+	function evalBlack(game, player, depth){
 		//TODO heuristics:
 		//endangers king ++
 		//endangers piece +
@@ -106,7 +252,7 @@ function MinimaxAI(maxDepth, type){
 		let lm = game.getLastMove();
 		if(lm.captures.length > 0){
 			console.log("CAPTURE ON BLACK MOVE "+lm.captures.length);
-			score += 100 * lm.captures.length;
+			score += 100 * lm.captures.length * (MAX_DEPTH - depth);
 		}
 		return score + getRandomInt(0,10);
 	}
