@@ -42,8 +42,8 @@
 						document.getElementById("to-play").innerText = resolvePlayer(player, true)+" to play";
 					},
 
-					onMove : function(move){
-						notator.addMove(move);
+					onMove : function(move, isGameOver){
+						notator.addMove(move, isGameOver);
 					}
 				};
 

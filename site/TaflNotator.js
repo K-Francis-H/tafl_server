@@ -6,8 +6,8 @@ function TaflNotator(initialBoard, variant, rules, notationId){
 
 	var notDiv = document.getElementById(notationId);
 
-	this.addMove = function(move){
-		var moveString = genCyningstanString(move);
+	this.addMove = function(move, isGameOver){
+		var moveString = genCyningstanString(move, isGameOver);
 		notDiv.innerHTML += "<li>"+moveString+"</li>";
 		moveStringsCyningstan.push(moveString);
 	};
@@ -33,7 +33,7 @@ function TaflNotator(initialBoard, variant, rules, notationId){
 		return moveStringsCyningstan.join("\n");
 	};
 
-	function genCyningstanString(move){
+	function genCyningstanString(move, isGameOver){
 		//+1 to 1 index the board not 0 index
 		var start = LETTERS[move.sx]+(move.sy+1);
 		var end = LETTERS[move.ex]+(move.ey+1);
@@ -46,6 +46,11 @@ function TaflNotator(initialBoard, variant, rules, notationId){
 			}
 			retVal += "x"+captures.join("/");
 		}
+		
+		if(isGameOver){
+			retVal+="++";
+		}
+
 		return retVal;
 	}
 

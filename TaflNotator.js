@@ -6,8 +6,8 @@ module.exports = function(initialBoard, variant, rules){
 
 	//var notDiv = document.getElementById(notationId);
 
-	this.addMove = function(move){
-		var moveString = genCyningstanString(move);
+	this.addMove = function(move, isGameOver){
+		var moveString = genCyningstanString(move, isGameOver);
 		//notDiv.innerHTML += "<li>"+moveString+"</li>";
 		moveStringsCyningstan.push(moveString);
 	};
@@ -28,7 +28,7 @@ module.exports = function(initialBoard, variant, rules){
 		return moveStringsCyningstan;
 	}
 
-	function genCyningstanString(move){
+	function genCyningstanString(move, isGameOver){
 		//+1 to 1 index the board not 0 index
 		var start = LETTERS[move.sx]+(move.sy+1);
 		var end = LETTERS[move.ex]+(move.ey+1);
@@ -41,6 +41,11 @@ module.exports = function(initialBoard, variant, rules){
 			}
 			retVal += "x"+captures.join("/");
 		}
+		
+		if(isGameOver){
+			retVal+="++";
+		}
+
 		return retVal;
 	}
 

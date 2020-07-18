@@ -352,7 +352,7 @@ function Game(creatorColor, variant, rules, rulesName){
 			board.makeMove(move);
 			updateMoveToken();
 			moves.push(move);
-			notator.addMove(move);
+			notator.addMove(move, board.isGameOver());
 			return true;
 		}else{
 			return false;
