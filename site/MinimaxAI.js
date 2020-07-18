@@ -7,6 +7,11 @@ function MinimaxAI(maxDepth, type){
 	const TYPE = type;
 	const OTHER_TYPE = TYPE === W ? B : W
 
+	//intentionally var, acts like a global
+	const initialPieceCounts = {
+		black : 8,
+		white : 5
+	};
 
 	this.getMove = function(game) {
 		return minimaxInit(game);
@@ -15,6 +20,7 @@ function MinimaxAI(maxDepth, type){
 	function minimaxInit(game){
 		console.log("TYPE: "+TYPE);
 		console.log(game);
+		//initialPieceCounts = game.getPieceCounts;
 		let isMaximizing = game.getCurrentPlayer() === TYPE;
 		let bestScore = isMaximizing ? Number.MIN_SAFE_INTEGER : Number.MAX_SAFE_INTEGER;
 		let moves = game.getMoves(TYPE); 
@@ -84,13 +90,17 @@ function MinimaxAI(maxDepth, type){
 			return -1000 * (MAX_DEPTH - depth);
 		}
 
+		let sign = TYPE === player ? 1 : -1;
+		console.log("sign: "+player+" TYPE: "+TYPE);
 		if(player === W){
-			return evalWhite(game, player, depth);
+			return sign * evalWhite(game, player, depth);
 		}
 		else{
-			return evalBlack(game, player, depth);
+			console.log("EVAL BLACK!!!!!");
+			return sign * evalBlack(game, player, depth);
 		}
 	}
+
 
 	function evalWhite(game, player, depth){
 		//TODO heuristics:
@@ -101,15 +111,26 @@ function MinimaxAI(maxDepth, type){
 		//is up in pieces ++ (general advantage)
 		//has non king piece on edge +
 
+		//TODO check if move endangers king by exposing them to capture
+
+		
+
 		let score = 0;
+
+		if(game.isForcedWinDefender()){
+			return 1000 * (MAX_DEPTH - depth);
+		}
+
 		let lm = game.getLastMove();
 		if(lm.captures.length > 0){
 			console.log("CAPTURE ON WHITE MOVE "+lm.captures.length);
-			score += 100 * lm.captures.length * (MAX_DEPTH - depth);
+			score += 100 * lm.captures.length;// * (MAX_DEPTH - depth);
 		}
 
-		let state = game.getBoard();
-		let kp = game.findKing();	//king's position: {x,y}
+		
+
+		//let state = game.getBoard();
+		//let kp = game.findKing();	//king's position: {x,y}
 		//TODO this is somewhat rule dependent, I'm checking Cleveland rules (2 attacker capture on king)
 		//TODO also completely ignores the class of attacks that slide across instead of towards the king
 		//determine if king is in imminent danger
@@ -221,6 +242,12 @@ function MinimaxAI(maxDepth, type){
 
 		//find king
 		//if he has access to the edge or corners its good
+
+		//check captures
+		let finalPieceCounts = game.getPieceCounts();
+		console.log("ipc: "+initialPieceCounts.black);
+		console.log("fpc: "+finalPieceCounts.black);
+		score += (initialPieceCounts.black - finalPieceCounts.black) * 100;// * (MAX_DEPTH - depth);
 		
 
 		return score + getRandomInt(0,10);
@@ -250,11 +277,36 @@ function MinimaxAI(maxDepth, type){
 		//is up in pieces + (gneral advantage, meaningless until late game, since black always starts with 2x pieces)
 		let score = 0;
 		let lm = game.getLastMove();
+		let multiplier = 1;//(MAX_DEPTH-depth);
 		if(lm.captures.length > 0){
 			console.log("CAPTURE ON BLACK MOVE "+lm.captures.length);
-			score += 100 * lm.captures.length * (MAX_DEPTH - depth);
+			score += 100 * lm.captures.length;// * (MAX_DEPTH - depth);
 		}
+
+		//TODO test all of these
+		score += 5000 * moveAttacksKing(game.getBoard(), lm);// * (MAX_DEPTH - depth);
+		
+
+		let finalPieceCounts = game.getPieceCounts();
+		console.log("B_ipc: "+initialPieceCounts.white);
+		console.log("B_fpc: "+finalPieceCounts.white);
+		score += (initialPieceCounts.white - finalPieceCounts.white) * 100;// * (MAX_DEPTH - depth);
+		
+		//score -= (initialPieceCounts.black - 
+
+		//row and col control
+		
+
 		return score + getRandomInt(0,10);
+	}
+
+	function moveAttacksKing(board, mv){
+		let sides = 0;
+		if(board[mv.ex+1] && (board[mv.ex+1][mv.ey] & K) > 0){sides++;}
+		if(board[mv.ex-1] && (board[mv.ex-1][mv.ey] & K) > 0){sides++;}
+		if(board[mv.ex][mv.ey+1] && (board[mv.ex][mv.ey+1] & K) > 0){sides++;}
+		if(board[mv.ex][mv.ey-1] && (board[mv.ex][mv.ey-1] & K) > 0){sides++;}
+		return sides;
 	}
 
 	function getRandomInt(min, max) {
@@ -262,4 +314,5 @@ function MinimaxAI(maxDepth, type){
 	  	max = Math.floor(max);
 	  	return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
 	}
+
 }

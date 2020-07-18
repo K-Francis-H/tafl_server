@@ -15,6 +15,8 @@ function ClevelandRules(){
 	const WHITE_MASK = W | K;
 	const PIECE_MASK = BLACK_MASK | WHITE_MASK;
 
+	//const self = this;
+
 	this.getMoves = function(board, player){
 		//console.log("pl: "+player);
 		if(player != W && player != B){
@@ -130,7 +132,39 @@ function ClevelandRules(){
 	}
 
 	function isKing(state, i,j){
+		console.log(state);
+		console.log(i);
+		console.log(j);
 		return (state[i][j] & K) > 0;
+	}
+
+	//create this function for all rules TODO
+	this.isForcedWinDefender = function(state){
+		let kp = findKing(state);
+		if(kp !== null){
+			let mvs = this.getMovesForPieceAtPosition(state, kp.x, kp.y, W);
+			let cornerCount = 0;
+			for(let i=0; i < mvs.length; i++){
+				console.log(mvs[i]);
+				if(isCorner(state, mvs[i].ex, mvs[i].ey)){
+					cornerCount++;
+				}
+			}
+			return cornerCount === 2;
+		}
+		return false;
+	}
+
+	function findKing(state){
+		for(let i=0; i < state.length; i++){
+			for(let j=0; j < state[0].length; j++){
+				console.log("CALLING isKING in findKing()");
+				if(isKing(state, i,j)){
+					return {x:i,y:j};
+				}
+			}
+		}
+		return null;
 	}
 
 	//should be called AFTER performing the move on the game state

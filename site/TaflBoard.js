@@ -233,6 +233,11 @@ function TaflBoard(variant, player, rules){
 		return isGameOver();
 	};
 
+	this.isForcedWinDefender = function(){
+		//king has access to 2 edges or 2 corners depending on rules
+		return rules.isForcedWinDefender(state);
+	}
+
 	this.getBoard = function(){
 		return state; //TODO may need to return an actual reference to this object
 		//return JSON.parse(JSON.stringify(state));
@@ -276,6 +281,25 @@ function TaflBoard(variant, player, rules){
 			}
 		}
 		return null;
+	}
+
+	this.getPieceCounts = function(){
+		let bsum = 0;
+		let wsum = 0;
+		for(let i=0; i < state.length; i++){
+			for(let j=0; j < state[0].length; j++){
+				if( (state[i][j] & WHITE_MASK) > 0){
+					wsum++;
+				}
+				else if( (state[i][j] & BLACK_MASK) > 0){
+					bsum++;
+				}
+			}
+		}
+		return {
+			black : bsum,
+			white : wsum
+		};
 	}
 
 	//should be called AFTER performing the move on the game state
