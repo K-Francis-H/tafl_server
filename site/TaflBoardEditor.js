@@ -19,6 +19,8 @@ function TaflBoardEditor(canvas, variant){
 
 	var selectedPiece = 0;
 	canvas.addEventListener("mousedown", function(event){
+		event.preventDefault();//stop it from dragging the whole image
+
 		console.log("drag start");
 		let x = event.pageX - offset(canvas).left;
 		let y = event.pageY - offset(canvas).top;
