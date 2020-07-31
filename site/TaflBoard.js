@@ -272,6 +272,12 @@ function TaflBoard(variant, player, rules){
 		return (state[i][j] & K) > 0;
 	}
 
+	this.isAttacker = function(x, y){
+		return (state[x] && state[x][y]) && ( (state[x][y] & B) > 0 || isSpecialCell(x,y) );
+	}
+
+	this.isSpecialCell = isSpecialCell;
+
 	this.findKing = function(){
 		for(let i=0; i < state.length; i++){
 			for(let j=0; j < state[0].length; j++){
@@ -399,6 +405,28 @@ TaflBoard.BRANDUBH =
  [0,0,0,W,0,0,0],
  [0,0,0,B,0,0,0],
  [0,0,0,B,0,0,0]];
+
+TaflBoard.BRANDUBH_ATTACKER_HMAP = 
+[[0,0,1,0,1,0,0],
+ [0,5,0,0,0,5,0],
+ [1,0,0,0,0,0,1],
+ [0,0,0,0,0,0,0],
+ [1,0,0,0,0,0,1],
+ [0,5,0,0,0,5,0],
+ [0,0,1,0,1,0,0]];
+
+TaflBoard.BRANDUBH_KING_HMAP =
+[[100,1 ,10,10,10, 1,100],
+ [1  ,10, 0, 0, 0,10,  1],
+ [10 , 0, 0, 0, 0, 0, 10],
+ [10 , 0, 0, 0, 0, 0, 10],
+ [10 , 0, 0, 0, 0, 0, 10],
+ [1  ,10, 0, 0, 0,10,  1],
+ [100, 1,10,10,10, 1,100]];
+
+//TaflBoard.BRANDUBH_DEFENDER_HMAP TODO
+
+//to compute state sum add dynamic and static hmaps where the pieces are on or can access with their next move
 
 //source https://www.boardgamegeek.com/article/2700987
 //TODO mentions special rule, attackers and defenders cannot passover king's hall

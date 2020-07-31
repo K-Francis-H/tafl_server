@@ -132,9 +132,9 @@ function ClevelandRules(){
 	}
 
 	function isKing(state, i,j){
-		console.log(state);
-		console.log(i);
-		console.log(j);
+		//console.log(state);
+		//console.log(i);
+		//console.log(j);
 		return (state[i][j] & K) > 0;
 	}
 

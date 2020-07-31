@@ -27,7 +27,8 @@ function TaflGameAI(canvas, /*playerColor,*/ variant /*, opponentType*/, player,
 	playerColor = player === "black" ? B : W ;
 	aiColor = playerColor === W ? B : W;
 
-	ai = new MinimaxAI(3, aiColor);
+	//ai = new MinimaxAI(1, aiColor);
+	ai = new HeatseekerAI(aiColor);
 
 	var loop = setInterval(function(){
 		console.log("running move check: "+board.getCurrentPlayer()+" "+ aiColor);

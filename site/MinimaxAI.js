@@ -7,7 +7,6 @@ function MinimaxAI(maxDepth, type){
 	const TYPE = type;
 	const OTHER_TYPE = TYPE === W ? B : W
 
-	//intentionally var, acts like a global
 	const initialPieceCounts = {
 		black : 8,
 		white : 5
@@ -125,6 +124,16 @@ function MinimaxAI(maxDepth, type){
 		if(lm.captures.length > 0){
 			console.log("CAPTURE ON WHITE MOVE "+lm.captures.length);
 			score += 100 * lm.captures.length;// * (MAX_DEPTH - depth);
+		}
+
+		let kp = game.findKing();
+		//TODO check if is in danger based on rules
+		//just check 2 side cap for now
+		if(game.isAttacker(kp.x+1, kp.y)
+		|| game.isAttacker(kp.x-1, kp.y)
+		|| game.isAttacker(kp.x, kp.y+1)
+		|| game.isAttacker(kp.x, kp.y-1)){
+			score -= 10 * (MAX_DEPTH - depth);
 		}
 
 		
@@ -295,6 +304,16 @@ function MinimaxAI(maxDepth, type){
 		//score -= (initialPieceCounts.black - 
 
 		//row and col control
+		//unique row cols
+
+		//move attacks king
+		let kp = game.findKing();
+		if(game.isAttacker(kp.x+1, kp.y)
+		|| game.isAttacker(kp.x-1, kp.y)
+		|| game.isAttacker(kp.x, kp.y+1)
+		|| game.isAttacker(kp.x, kp.y-1)){
+			score += 50 * (MAX_DEPTH - depth);
+		}
 		
 
 		return score + getRandomInt(0,10);
