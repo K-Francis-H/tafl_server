@@ -38,16 +38,16 @@ function HeatseekerAI(type){
 					//or consider king's position 
 
 					
-					if(state[i-1][j] === B){
+					if(state[i-1] !== undefined && state[i-1][j] === B){
 						dynamap[i+1][j] += 15;	//can capture from above
-						dynamap[i-2][j] +=  3;	//can reinforce ally from below
+						if(dynamap[i-2]){ dynamap[i-2][j] +=  3;}	//can reinforce ally from below
 					}else{
 						dynamap[i-1][j] += 2;	//can attack
 					}
 
-					if(state[i+1][j] === B){
+					if(state[i+1] !== undefined && state[i+1][j] === B){
 						dynamap[i-1][j] += 15;
-						dynamap[i+2][j] += 3;
+						if(dynamap[i+2]){ dynamap[i+2][j] += 3;}
 					}else{
 						dynamap[i+1][j] += 2;	//can attack
 					}
@@ -70,16 +70,16 @@ function HeatseekerAI(type){
 					//add value to every square until we reach the edge of the board in all directions
 
 					//capture heuristics (winning move)
-					if(state[i-1][j] === B || game.isSpecialCell(i-1,j) ){
-						dynamap[i+1][j] += 1000;
+					if(state[i-1] !== undefined && (state[i-1][j] === B || game.isSpecialCell(i-1,j) ) ){
+						dynamap[i+1] && (dynamap[i+1][j] += 1000);
 					}
-					if(state[i+1][j] === B || game.isSpecialCell(i+1,j) ){
-						dynamap[i-1][j] += 1000;
+					if(state[i+1] !== undefined && (state[i+1][j] === B || game.isSpecialCell(i+1,j) ) ){
+						dynamap[i-1] && (dynamap[i-1][j] += 1000);
 					}
-					if(state[i][j-1] === B || game.isSpecialCell(i,j-1) ){
+					if(/*state[i][j-1] &&*/ (state[i][j-1] === B || game.isSpecialCell(i,j-1) ) ){
 						dynamap[i][j+1] += 1000;
 					}
-					if(state[i][j+1] === B || game.isSpecialCell(i,j+1) ){
+					if(/*state[i][j+1] &&*/ (state[i][j+1] === B || game.isSpecialCell(i,j+1) ) ){
 						dynamap[i][j-1] += 1000;
 					}
 					//contain heuristics
