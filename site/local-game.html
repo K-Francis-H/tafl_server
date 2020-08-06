@@ -26,7 +26,7 @@
 				var notator = new TaflNotator(TaflBoard[variant], variant, rules, "notation");
 
 				document.getElementById("variant").innerText = capitalize(variant);
-				document.getElementById("playing-as").innerText = "Local game";
+				document.getElementById("playing-as").innerText = "Local Game";
 				//handles sending back game state data for UI display
 				var callback = {
 					//never used by local games
@@ -110,7 +110,7 @@
 				<h1 id="variant"></h1>
 				<h3 id="playing-as"></h3>
 				<h3 id="to-play"></h3>
-				<canvas id="canvas" draggable="true" width=800 height=800></canvas>
+				<canvas id="canvas" draggable="true" width=800 height=800 style="image-rendering: pixelated"></canvas>
 				<h4 id="share-label" style="display:none;">Join Link:</h4>
 				<input id="shareable-join-link" readonly style="display:none;"/>
 				<button id="copy-button" style="display:none;">Copy</button>
@@ -120,7 +120,6 @@
 				<ol id=notation></ol>
 				<button id=board-state-button class=play-button>Copy Board State</button>
 				<button id=notation-button class=play-button>Copy Notation</button>
-				<!--<p>what the fuck 1</p><p>what the fuck 2</p><p>what the fuck 3</p><p>what the fuck 4</p><p>what the fuck 5</p>-->
 			</div>
 		</center>
 	</body>

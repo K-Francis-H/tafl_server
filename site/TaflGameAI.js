@@ -1,4 +1,4 @@
-function TaflGameAI(canvas, /*playerColor,*/ variant /*, opponentType*/, player, rules){
+function TaflGameAI(canvas, /*playerColor,*/ variant /*, opponentType*/, player, rules, callback){
 	const E = 0x00;//empty
 	const W = 0x01;//white (defenders)
 	const B = 0x02;//black (attackers)
@@ -30,11 +30,20 @@ function TaflGameAI(canvas, /*playerColor,*/ variant /*, opponentType*/, player,
 	//ai = new MinimaxAI(1, aiColor);
 	ai = new HeatseekerAI(aiColor);
 
+	callback.onTurnChange(board.getCurrentPlayer());
+
 	var loop = setInterval(function(){
 		console.log("running move check: "+board.getCurrentPlayer()+" "+ aiColor);
 		if(board.getCurrentPlayer() === aiColor  && board.isGameOver() === 0){
 			board.makeMove(ai.getMove(board));
 			renderer.draw(board);
+
+			callback.onMove(board.getLastMove(), board.isGameOver());
+			callback.onTurnChange(board.getCurrentPlayer());
+
+			if(board.isGameOver()){
+				callback.onGameOver(board.isGameOver());
+			}
 		}
 	}, 1000);
 
@@ -88,6 +97,12 @@ function TaflGameAI(canvas, /*playerColor,*/ variant /*, opponentType*/, player,
 			});
 			selectedPiece = null;
 			//TODO logic for determining if the game is over/won
+			callback.onMove(board.getLastMove(), board.isGameOver());
+			callback.onTurnChange(board.getCurrentPlayer());
+
+			if(board.isGameOver()){
+				callback.onGameOver(board.isGameOver());
+			}
 		}else{
 			selectedPiece = null;
 		}

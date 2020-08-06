@@ -24,8 +24,8 @@ function HeatseekerAI(type, variant){
 
 		//init map to the static map by cloning it via JSON->stringify->parse
 		let dynamap = JSON.parse(JSON.stringify(TABLUT_ATTACKER_HMAP));//BRANDUBH_ATTACKER_HMAP));
-		let pre = JSON.parse(JSON.stringify(TABLUT_ATTACKER_HMAP));//BRANDUBH_ATTACKER_HMAP));
-		console.log(pre);
+		//let pre = JSON.parse(JSON.stringify(TABLUT_ATTACKER_HMAP));//BRANDUBH_ATTACKER_HMAP));
+		//console.log(pre);
 		let state = game.getBoard();
 		for(let i=0; i < state.length; i++){
 			//dynamap[i] = [];	//allocate 2nd dimension

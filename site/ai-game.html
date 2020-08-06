@@ -4,6 +4,7 @@
 		<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon"/>
 		<meta charset="utf-8">
 		<title>Tafl Games</title>
+		<link rel="stylesheet" type="text/css" href="style/notation.css">
 		<script src="TaflBoard.js"></script>
 		<script src="TaflRenderer.js"></script>
 		<script src="MonteCarloAI.js"></script>
@@ -15,6 +16,7 @@
 		<script src="FetlarRules.js"></script>
 		<script src="CopenhagenRules.js"></script>
 		<script src="ClevelandRules.js"></script>
+		<script src="TaflNotator.js"></script>
 		<script>
 			document.addEventListener("DOMContentLoaded", function(){
 				//var board = new TaflBoard(TaflBoard.BRANDUBH);
@@ -25,13 +27,45 @@
 				var variant = url.searchParams.get("variant");
 				var playerColor = url.searchParams.get("playerColor");
 				var rules = resolveRuleSet(url.searchParams.get("rules"));
+				var notator = new TaflNotator(TaflBoard[variant], variant, rules, "notation");
+
+				document.getElementById("variant").innerText = capitalize(variant);
+				document.getElementById("playing-as").innerText = "AI Game";
+
+				//UI updater
+				var callback = {
+					setPlayer : function(player){
+						document.getElementById("playing-as").innerText = "Playing as "+resolvePlayer(player, false);
+					},
+
+					onGameOver : function(winner){
+						document.getElementById("to-play").innerText = resolvePlayer(winner, true)+" wins!";
+					},
+
+					onTurnChange : function(player){
+						document.getElementById("to-play").innerText = resolvePlayer(player, true)+" to play";
+					},
+
+					onMove : function(move, isGameOver){
+						notator.addMove(move, isGameOver);
+					}
+				}
+
 				if(variant && playerColor){
 					variant = variant.toUpperCase();
-					var aiGame = new TaflGameAI(document.getElementById("canvas"), TaflBoard[variant], playerColor, rules);
+					var aiGame = new TaflGameAI(document.getElementById("canvas"), TaflBoard[variant], playerColor, rules, callback);
 				}else{
 					//bad...
 					//redirect to main page
 					window.location.replace("/");
+				}
+
+				function resolvePlayer(player, isUppercase){
+					switch(player){
+						case B: return isUppercase ? "Black" : "black";
+						case W: return isUppercase ? "White" : "white";
+						default: return "???";
+					}
 				}
 
 				function resolveRuleSet(value){
@@ -47,20 +81,30 @@
 							return new ClevelandRules();
 					}
 				}
+
+				function capitalize(str){
+					return str[0].toUpperCase() + str.substr(1);
+				}
 			});
 		</script>
 	</head>
 	<body>
 		<a href="/">New Game</a>
 		<center>
-			<h1 id="variant"></h1>
-			<h3 id="playing-as"></h3>
-			<h3 id="to-play"></h3>
-			<div id="game-container">
+			<div id="game-container" style="display:inline-block">
+				<h1 id="variant"></h1>
+				<h3 id="playing-as"></h3>
+				<h3 id="to-play"></h3>
 				<canvas id="canvas" draggable="true" width=800 height=800 style="image-rendering: pixelated"></canvas>
 				<h4 id="share-label" style="display:none;">Join Link:</h4>
 				<input id="shareable-join-link" readonly style="display:none;"/>
 				<button id="copy-button" style="display:none;">Copy</button>
+			</div>
+			<div style="display:inline-block;vertical-align:top">
+				<h1>&nbsp;</h1><h3>&nbsp;</h3><h3>&nbsp;</h3>
+				<ol id=notation></ol>
+				<button id=board-state-button class=play-button>Copy Board State</button>
+				<button id=notation-button class=play-button>Copy Notation</button>
 			</div>
 		</center>
 	</body>
