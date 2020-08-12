@@ -13,8 +13,14 @@ function HeatseekerAI(type, variant){
 	const OTHER_TYPE = TYPE === W ? B : W
 
 	this.getMove = function(game){
-		return heatseek(game);
+		//return heatseek(game);
+		//return heatseekDefender(game);
 		//return game.getMoves(TYPE)[0];
+		if(TYPE === B){
+			return heatseek(game);
+		}else{
+			return heatseekDefender(game);
+		}
 	}
 
 	function heatseek(game){
@@ -141,6 +147,111 @@ function HeatseekerAI(type, variant){
 		return bestMoves[getRandomInt(0, bestMoves.length)];
 	}
 
+	function heatseekDefender(game){
+		//TODO heuristics for white
+
+		let state = game.getBoard();
+		let dynamap = JSON.parse(JSON.stringify(TABLUT_KING_HMAP));
+		for(let i=0; i < state.length; i++){
+			for(let j=0; j < state[0].length; j++){
+				if(state[i][j] === B){
+					//capture heuristics
+
+					//these may be identical
+					if(state[i-1] !== undefined && state[i-1][j] === W){
+						dynamap[i+1][j] += 15;	//can capture from above
+						if(dynamap[i-2]){ dynamap[i-2][j] +=  3;}	//can reinforce ally from below
+					}else if(state[i-1] !== undefined){
+						dynamap[i-1][j] += 2;	//can attack
+					}
+
+					if(state[i+1] !== undefined && state[i+1][j] === W){
+						dynamap[i-1][j] += 15;
+						if(dynamap[i+2]){ dynamap[i+2][j] += 3;}
+					}else if(state[i+1] !== undefined){
+						dynamap[i+1][j] += 2;	//can attack
+					}
+
+					if(state[i][j-1] === W){
+						dynamap[i][j+1] += 15;
+						dynamap[i][j-2] += 3;
+					}else{
+						dynamap[i][j-1] += 2;
+					}
+
+					if(state[i][j+1] === W){
+						dynamap[i][j-1] += 15;
+						dynamap[i][j+2] += 3;
+					}else{
+						dynamap[i][j+1] += 2;
+					}
+				}
+				else if(state[i][j] === K){
+					//defensive moves, need to keep king from doing these
+					//avoid blocking king edge access
+
+					//add +2 to all moves to encourage king movement over captures
+					//go in all 4 directions and add points
+
+					//if edge access highly encourage so long as its safe, discourage moving next to attackers
+
+					//discourage moves that border attackers
+
+					//encourage edge access
+					let edgeAccess = findEdgeAccess(state, i, j);
+					if(edgeAccess.left){
+						dynamap[0][j] += 50;
+					}
+					if(edgeAccess.right){
+						dynamap[state.length-1][0] += 50;
+					}
+					if(edgeAccess.up){
+						dynamap[i][0] += 50;
+					}
+					if(edgeAccess.down){
+						dynamap[i][state[i].length-1] += 50;
+					}
+					/*for(let x=i-1; x >= 0 && edgeAccess.left; x--){
+						
+					}
+					for(let x=i+1; x < state.length && edgeAccess.right; x++){
+
+			
+					}
+					for(let y=j-1; y >=0 && edgeAccess.up; y--){
+						
+					}
+					for(let y=j+1; y < state[i].length && edgeAccess.down; y++){
+
+					}*/ 
+				}
+				//escape heuristics?
+
+				//edge access is huge
+			}
+		}
+
+		let moves = game.getMoves(TYPE);
+		let bestMoves = [];
+		bestMoves.push(moves[0]);
+		let bestScore = dynamap[moves[0].ex][moves[0].ey];
+		for(let i=0; i < moves.length; i++){
+			let move = moves[i];
+			let kingMod = state[move.sx][move.ey] === K ? 5 : 0; //encourage king movement
+			let score = dynamap[move.ex][move.ey] + kingMod;
+			if( score > bestScore){
+				bestScore = score;
+				bestMoves = [];
+				bestMoves.push(move);
+			}else if(score === bestScore){
+				bestMoves.push(move);
+			} 
+		}
+
+		//randomly select move from list of tied best moves
+		return bestMoves[getRandomInt(0, bestMoves.length)];
+	}
+
 	//returns an object with true false values for each direction:
 	//{ up: <boolean>, down: <boolean>, left: <boolean>, right: <boolean>}
 	function findEdgeAccess(state, kingX, kingY){
@@ -210,6 +321,8 @@ BRANDUBH_KING_HMAP =
  [10 , 0, 0, 0, 0, 0, 10],
  [1  ,10, 0, 0, 0,10,  1],
  [100, 1,10,10,10, 1,100]];
+
+//TODO defender map or just use king map, defenders wont see win moves. give king a bonus to encourage movement
 
 TABLUT_ATTACKER_HMAP = 
 [[0,0,1,0,0,0,1,0,0],
