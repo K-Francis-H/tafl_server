@@ -60,6 +60,25 @@
 					window.location.replace("/");
 				}
 
+				//setup copy state/notation butons
+				var copyBoardStateButton = document.getElementById("board-state-button");
+				var copyBoardNotationButton = document.getElementById("notation-button");
+
+				//TODO boardstate may require https since its not displayed on screen
+				//copy board notation
+				copyBoardNotationButton.onclick = function(){
+					let ta = document.createElement('textarea');
+					ta.id="ta-notation";
+					ta.style.height=0;
+					document.body.appendChild(ta);
+					ta.value = notator.getMoveNotationsCyningstan();
+					//console.log(notator.getMoveNotationsCyningstan());
+					ta.select();
+					document.execCommand("copy");
+
+					document.body.removeChild(ta);
+				};
+
 				function resolvePlayer(player, isUppercase){
 					switch(player){
 						case B: return isUppercase ? "Black" : "black";
