@@ -4,6 +4,8 @@ var unmatchedPlayers = {}; //dict of gametype to unmatched players
 
 //a database would do this so much better...
 
+//let players choose options: preferred side, opponent strength (weaker, stronger, similar), preferred variant, preferred ruleset
+
 module.exports = {
 	
 	enqueuePlayer : function(req, res){
@@ -22,5 +24,5 @@ module.exports = {
 };
 
 function matchmake(gameType){
-	
+	//TODO look for similar ELO, then simple availability, preferred side, etc
 }
