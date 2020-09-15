@@ -28,6 +28,10 @@ module.exports = function(initialBoard, variant, rules){
 		return moveStringsCyningstan;
 	}
 
+	this.getNotationRaw = function(){
+		return moveStringsCyningstan.join("\n");
+	}
+
 	function genCyningstanString(move, isGameOver){
 		//+1 to 1 index the board not 0 index
 		var start = LETTERS[move.sx]+(move.sy+1);

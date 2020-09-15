@@ -4,10 +4,12 @@ const uuid = require("node-uuid");
 const rules = require("./Rules.js");
 const TaflBoard = require("./TaflBoard.js").TaflBoard;
 const TaflNotator = require("./TaflNotator.js");
+const TaflArchiver = require("./TaflArchiver.js");
 
 
 
 //board ids
+const E = 0x00;//empty, also used to mean no winner (in progress) in TaflBoard::isGameOver
 const W = 0x01;//white
 const B = 0x02;//black
 const K = 0x04;//white king
@@ -223,7 +225,7 @@ module.exports = {
 		if(games[gameId] && !games[gameId].isGameFull()){
 			return games[gameId].playerTwoJoin();
 		}else{
-			//freakout
+			//TODO freakout
 		}
 	},
 
@@ -233,7 +235,7 @@ module.exports = {
 
 	move : function(gameId, playerId, token, move){
 		if(games[gameId]){
-			return games[gameId].setMoveAlt(playerId, token, move);
+			return games[gameId].setMove(playerId, token, move);
 		}else{
 			//TODO freakout
 			console.log("unknown game: "+gameId);
@@ -284,7 +286,13 @@ function Game(creatorColor, variant, rules, rulesName){
 	};
 	players[playerOne.id] = playerOne;
 
-	var playerTwo = false;//awaiting join
+	//awaiting join, but pre-initialized here
+	var playerTwo = {
+		color : creatorColor === "white" ? "black" : "white",
+		id : uuid.v4(),
+		hasJoined : false
+	};
+	players[playerTwo.id] = playerTwo;
 
 	var moveToken = {
 		color : "black",
@@ -299,6 +307,14 @@ function Game(creatorColor, variant, rules, rulesName){
 
 	var board = new TaflBoard(JSON.parse(JSON.stringify(INITIAL_STATE[variant])), null, rules);
 
+	TaflArchiver.startGame(
+		gameId,
+		resColor(playerOne, playerOne.id, playerTwo.id),
+		resColor(playerOne, playerTwo.id, playerOne.id),
+		variant,
+		rulesName
+	);
+		
 	this.getId = function(){
 		return gameId;
 	};
@@ -308,51 +324,47 @@ function Game(creatorColor, variant, rules, rulesName){
 	};
 
 	this.isGameFull = function(){
-		return playerOne && playerTwo;
+		return playerOne && playerTwo.hasJoined;
 	}
 
 	this.playerTwoJoin = function(){
-		playerTwo = {
-			color : creatorColor === "white" ? "black" : "white",
-			id : uuid.v4(),
-		};
-		players[playerTwo.id] = playerTwo;
+		playerTwo.hasJoined = true;
 		return {
 			playerId: playerTwo.id,
 			rules : rulesName
 		};
 	}
 
-	this.setMove = function(playerId, token, state){
-		//TODO check if valid
-		//if good update state and send true else return false
-		//also check move token is valid so the move has not been spoofed
-
-		//then lastly update the move token color and set a new id
-		if(moveToken.id === token){
-			//check if its a valid state
-				//there must be a difference between this and previous state
-					//difference must be by a piece of the color that holds the token
-					//difference must be within the rules (orthogonal, not occupying special spaces, etc)
-			states.push(JSON.parse(JSON.stringify(state)));
-			updateMoveToken();
-			return true;
-		}else{
-			return false;
-		}
-	}
-
-	this.setMoveAlt = function(playerId, token, move){
+	this.setMove = function(playerId, token, move){
 		if(moveToken.id === token){
 			//check if its a valid state
 				//there must be a difference between this and previous state
 					//difference must be by a piece of the color that holds the token
 					//difference must be within the rules (orthogonal, not occupying special spaces, etc)
 			//states.push(JSON.parse(JSON.stringify(state)));
+			
+
 			board.makeMove(move);
 			updateMoveToken();
 			moves.push(move);
-			notator.addMove(move, board.isGameOver());
+
+			let isGameOver = board.isGameOver(); //memoize
+			notator.addMove(move, isGameOver);
+
+			let result = null;
+			if( (isGameOver & BLACK_MASK) > 0){
+				result = getAttackerId();
+			}else if( (isGameOver & WHITE_MASK) > 0){
+				result = getDefenderId();
+			}//otherwise draw TODO, or still in progress leave null
+
+			TaflArchiver.updateGame(
+				gameId,
+				notator.getNotationRaw(),//get as new line separated values
+				isGameOver === E ? "in progress" : "complete",
+				result, //TODO what about draws?
+			);
+
 			return true;
 		}else{
 			return false;
@@ -409,6 +421,31 @@ function Game(creatorColor, variant, rules, rulesName){
 			case "hnefatafl":	return "Hnefatafl";
 			case "large_hnefatafl":	return "Large Hnefatafl";
 			case "alea_evangelii":	return "Alea Evangelii";
+		}
+	}
+
+	//determine which side a player is on and return the desired value
+	function resColor(player, resDefender, resAttacker){
+		if( (player.color & BLACK_MASK) > 0){
+			return resAttacker;
+		}else{
+			return resDefender;
+		}
+	}
+
+	function getAttackerId(){
+		if( (playerOne.color & BLACK_MASK) > 0){
+			return playerOne.id;
+		}else{
+			return playerTwo.id;
+		}
+	}
+
+	function getDefenderId(){
+		if( (playerOne.color & WHITE_MASK) > 0){
+			return playerOne.id;
+		}else{
+			return playerTwo.id;
 		}
 	}
 
