@@ -54,6 +54,7 @@ module.exports = function(initialBoard, variant, rules){
 	}
 
 	function getPositionNotation(board){
-		//TODO
+		//TODO recieve 2d array from board iterate and make into human readable ASCII representation
+		//or one of those strings that describes the board, but with annotations for rules/variant before board state like in chess sorta
 	}
 }

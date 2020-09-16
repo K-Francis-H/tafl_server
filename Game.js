@@ -299,6 +299,8 @@ function Game(creatorColor, variant, rules, rulesName){
 		id : uuid.v4()
 	};
 
+	var undoRequestToken = null; //will be one of the playerIds if they have requested an undo
+
 	var state = JSON.parse(JSON.stringify(INITIAL_STATE[variant]));
 	var size = state.length;
 	
@@ -371,6 +373,29 @@ function Game(creatorColor, variant, rules, rulesName){
 		}
 	}
 
+	this.requestUndo = function(requestingPlayerId){
+		//TODO need a lock on the next move token. Probably take it as rejection if the opponent continues play, but set a flag
+		undoRequestToken = {
+			requester : requestingPlayerId,
+			token : uuid.v4()
+		}
+		//then hand this out inthe next game status update
+	}
+	
+	this.acceptUndo = function(){
+		//should set a lock so that get status returns an old status pending this operation which is non atomic and may cause a race condition
+		undoRequestToken = null;
+		board.undo();
+		notator.undo();
+		//TODO we need to account for the scenario where a player would like the opposite player to undo their (the opposite player's) move,
+		//assumed that the original player has seen the result of their opponents move and now wants to return to their previous turn (2 game turns ago)
+	}
+
+	this.refuseUndo = function(){
+		undoRequestToken = null;
+		//do nothing else, the refusing player can make their move
+	}
+
 	this.getStatus = function(playerId){
 
 		var player = players[playerId];
@@ -398,7 +423,9 @@ function Game(creatorColor, variant, rules, rulesName){
 		//if game has completed wait until both players are notified then destroy this game
 		if(board.isGameOver() > 0){
 			setTimeout(function(){
-				//TODO annotate and archive game in a db to keep stats
+				//game was saved and updated throughout play, it is now completed and can be removed from RAM
+				//if expired games are looked up they should be retrieved from db if the RAM lookup fails, if both fail
+				//then a 404 type screen
 				module.exports.destroy(gameId);
 			}, 60000);
 		}
