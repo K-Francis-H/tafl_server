@@ -148,10 +148,14 @@ function HeatseekerAI(type, variant){
 	}
 
 	function heatseekDefender(game){
-		//TODO heuristics for white
+		//heuristics for white
 
+		
+		//maybe king, defenders should use different maps, defenders try to get to exterior and dont help generally
 		let state = game.getBoard();
-		let dynamap = JSON.parse(JSON.stringify(TABLUT_KING_HMAP));
+		let dynamap = JSON.parse(JSON.stringify(TABLUT_DEF_HMAP));
+
+		console.log(JSON.stringify(dynamap));
 		for(let i=0; i < state.length; i++){
 			for(let j=0; j < state[0].length; j++){
 				if(state[i][j] === B){
@@ -159,7 +163,7 @@ function HeatseekerAI(type, variant){
 
 					//these may be identical
 					if(state[i-1] !== undefined && state[i-1][j] === W){
-						dynamap[i+1][j] += 15;	//can capture from above
+						if(dynamap[i+1]){dynamap[i+1][j] += 15;}	//can capture from above
 						if(dynamap[i-2]){ dynamap[i-2][j] +=  3;}	//can reinforce ally from below
 					}else if(state[i-1] !== undefined){
 						dynamap[i-1][j] += 2;	//can attack
@@ -185,6 +189,8 @@ function HeatseekerAI(type, variant){
 					}else{
 						dynamap[i][j+1] += 2;
 					}
+
+					//TODO determine attacks and avoid if self endangering
 				}
 				else if(state[i][j] === K){
 					//defensive moves, need to keep king from doing these
@@ -247,6 +253,8 @@ function HeatseekerAI(type, variant){
 				bestMoves.push(move);
 			} 
 		}
+
+		console.log(JSON.stringify(dynamap));
 
 		//randomly select move from list of tied best moves
 		return bestMoves[getRandomInt(0, bestMoves.length)];
@@ -345,3 +353,14 @@ TABLUT_KING_HMAP =
  [10,0,0,0,0,0,0,0,10],
  [1,10,0,0,0,0,0,10,1],
  [100,1,10,10,10,10,10,1,100]];
+
+TABLUT_DEF_HMAP = 
+[[100,0,1,0,0,0,1,0,100],
+ [0,5,0,0,0,0,0,5,0],
+ [1,0,0,0,0,0,0,0,1],
+ [0,0,0,0,0,0,0,0,0],
+ [0,0,0,0,0,0,0,0,0],
+ [0,0,0,0,0,0,0,0,0],
+ [1,0,0,0,0,0,0,0,1],
+ [0,5,0,0,0,0,0,5,0],
+ [100,0,1,0,0,0,1,0,100]];
