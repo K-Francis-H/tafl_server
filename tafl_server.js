@@ -93,6 +93,14 @@ app.post("/move/:gameId/:playerId", function(req, res){
 	}
 }); 
 
+app.post("request-undo/:gameId/:playerId", function(req, res){
+
+});
+
+app.post("respond-undo/:gameId/:playerId/", function(req, res){
+
+});
+
 /*app.get("/ping/:playerId", function(req, res){
 	//TODO use this to receive updates:
 		//chat

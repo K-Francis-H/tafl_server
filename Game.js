@@ -399,8 +399,9 @@ function Game(creatorColor, variant, rules, rulesName){
 	this.getStatus = function(playerId){
 
 		var player = players[playerId];
+		var retVal = {};
 		if(player.color === moveToken.color){
-			return {
+			retVal = {
 				variant : getPrettyName(variant),
 				move : moveToken.color,
 				token : moveToken.id,
@@ -411,7 +412,7 @@ function Game(creatorColor, variant, rules, rulesName){
 			};
 		}else{
 			//dont give them the token, its not their turn
-			return {
+			retVal = {
 				variant : getPrettyName(variant),
 				move : moveToken.color,
 				state : board.getAnnotatedBoard(),//states[states.length-1],
@@ -420,6 +421,13 @@ function Game(creatorColor, variant, rules, rulesName){
 				notation : notator.getNotation()
 			};
 		}
+
+		if(undoRequestToken && undoRequestToken.requester !== playerId){
+			retVal.undoRequestToken = undoRequestToken;
+		}
+
+		return retVal;
+
 		//if game has completed wait until both players are notified then destroy this game
 		if(board.isGameOver() > 0){
 			setTimeout(function(){

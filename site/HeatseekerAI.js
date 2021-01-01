@@ -23,7 +23,7 @@ function HeatseekerAI(type, variant){
 		}
 	}
 
-	function heatseek(game){
+	function heatseek(game, variant){
 		
 
 		//compute dynamic heatmap
@@ -147,7 +147,7 @@ function HeatseekerAI(type, variant){
 		return bestMoves[getRandomInt(0, bestMoves.length)];
 	}
 
-	function heatseekDefender(game){
+	function heatseekDefender(game, variant){
 		//heuristics for white
 
 		
