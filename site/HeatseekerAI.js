@@ -12,6 +12,9 @@ function HeatseekerAI(type, variant){
 	const TYPE = type;
 	const OTHER_TYPE = TYPE === W ? B : W
 
+	var size = variant.length;
+	console.log(size);
+
 	this.getMove = function(game){
 		//return heatseek(game);
 		//return heatseekDefender(game);
@@ -29,8 +32,8 @@ function HeatseekerAI(type, variant){
 		//compute dynamic heatmap
 
 		//init map to the static map by cloning it via JSON->stringify->parse
-		let dynamap = JSON.parse(JSON.stringify(TABLUT_ATTACKER_HMAP));//BRANDUBH_ATTACKER_HMAP));
-		//let pre = JSON.parse(JSON.stringify(TABLUT_ATTACKER_HMAP));//BRANDUBH_ATTACKER_HMAP));
+		//let dynamap = JSON.parse(JSON.stringify(BRANDUBH_ATTACKER_HMAP));
+		let pre = JSON.parse(JSON.stringify(TABLUT_ATTACKER_HMAP));//BRANDUBH_ATTACKER_HMAP));
 		//console.log(pre);
 		let state = game.getBoard();
 		for(let i=0; i < state.length; i++){
@@ -153,7 +156,8 @@ function HeatseekerAI(type, variant){
 		
 		//maybe king, defenders should use different maps, defenders try to get to exterior and dont help generally
 		let state = game.getBoard();
-		let dynamap = JSON.parse(JSON.stringify(TABLUT_DEF_HMAP));
+		let dynamap = JSON.parse(JSON.stringify(TABLUT_DEF_HMAP)); //for defenders
+		let kingmap = JSON.parse(JSON.stringify(TABLUT_DEF_HMAP)); 
 
 		console.log(JSON.stringify(dynamap));
 		for(let i=0; i < state.length; i++){
@@ -170,7 +174,7 @@ function HeatseekerAI(type, variant){
 					}
 
 					if(state[i+1] !== undefined && state[i+1][j] === W){
-						dynamap[i-1][j] += 15;
+						if(dynamap[i-1]){dynamap[i-1][j] += 15;}
 						if(dynamap[i+2]){ dynamap[i+2][j] += 3;}
 					}else if(state[i+1] !== undefined){
 						dynamap[i+1][j] += 2;	//can attack
@@ -206,17 +210,27 @@ function HeatseekerAI(type, variant){
 					//encourage edge access
 					let edgeAccess = findEdgeAccess(state, i, j);
 					if(edgeAccess.left){
-						dynamap[0][j] += 50;
+						kingmap[0][j] += 50;
 					}
 					if(edgeAccess.right){
-						dynamap[state.length-1][0] += 50;
+						kingmap[state.length-1][0] += 50;
 					}
 					if(edgeAccess.up){
-						dynamap[i][0] += 50;
+						kingmap[i][0] += 50;
 					}
 					if(edgeAccess.down){
-						dynamap[i][state[i].length-1] += 50;
+						kingmap[i][state[i].length-1] += 50;
 					}
+					
+					//check safety of moves
+					kingmap = findSafeSpots(kingmap, state, i, j);
+
+					console.log("KINGMAP");
+					console.log(kingmap);
+					
+					//TODO encourage avoidance of enemies, access to next turn edge access
+					//if enemy adjacent -> move now, if edge acess without risk available -> move noe
+					
 					/*for(let x=i-1; x >= 0 && edgeAccess.left; x--){
 						
 					}
@@ -229,7 +243,7 @@ function HeatseekerAI(type, variant){
 					}
 					for(let y=j+1; y < state[i].length && edgeAccess.down; y++){
 
-					}*/ 
+					}*/
 				}
 				//escape heuristics?
 
@@ -237,14 +251,22 @@ function HeatseekerAI(type, variant){
 			}
 		}
 
+		//TODO use kingmap to separately identify the best king move and combine with other moves for best
+
 		let moves = game.getMoves(TYPE);
 		let bestMoves = [];
 		bestMoves.push(moves[0]);
 		let bestScore = dynamap[moves[0].ex][moves[0].ey];
+
 		for(let i=0; i < moves.length; i++){
 			let move = moves[i];
-			let kingMod = state[move.sx][move.ey] === K ? 5 : 0; //encourage king movement
-			let score = dynamap[move.ex][move.ey] + kingMod;
+			let kingMod = state[move.sx][move.ey] === K ? 15 : 0; //encourage king movement
+			let score = 0;//dynamap[move.ex][move.ey] + kingMod;
+			if(kingMod > 0){
+				score = kingmap[move.ex][move.ey] + kingMod;
+			}else{
+				score = dynamap[move.ex][move.ey];
+			}
 			if( score > bestScore){
 				bestScore = score;
 				bestMoves = [];
@@ -254,7 +276,8 @@ function HeatseekerAI(type, variant){
 			} 
 		}
 
-		console.log(JSON.stringify(dynamap));
+		console.log("DYNAMAP");
+		console.log(dynamap);
 
 		//randomly select move from list of tied best moves
 		return bestMoves[getRandomInt(0, bestMoves.length)];
@@ -299,6 +322,94 @@ function HeatseekerAI(type, variant){
 
 		return retVal;
 	}
+
+	//works, but not great when the king is nearly surrounded, need to encourage defenders to block king captures
+	//TODO also check for adjacency to the throne or corners
+	function findSafeSpots(kingmap, state, kingX, kingY){
+		//returns modified state with scores adjusted based on where the king is under attack
+		let newState = JSON.parse(JSON.stringify(kingmap));
+
+		let i = kingX;
+		let j = kingY;
+
+		for(let x=i-1; x >= 0; x--){//left
+			//check all 3 sides surrounding the curent pos, if any are attackers -25 from score
+			if( isSafe(state, x-1, j) 
+			&&  isSafe(state, x, j+1)
+			&&  isSafe(state, x, j-1)){
+				newState[x][j] += 25;
+			}
+			/*
+			if( (state[x-1] && (state[x-1][j] !== B))
+			&&  (state[x] && (state[x][j+1] !== B))
+			&&  (state[x] && (state[x][j-1] !== B)) ){
+				newState[x][j] += 25;
+			}*/
+		}
+		for(let x=i+1; x < state.length; x++){//right
+			//check all 3 sides surrounding the curent pos, if any are attackers -25 from score
+			if( isSafe(state, x+1, j)
+			&&  isSafe(state, x, j+1)
+			&&  isSafe(state, x, j-1)){
+				newState[x][j] += 25;
+			}
+			/* 
+			if( (state[x+1] && (state[x+1][j] !== B))
+			&&  (state[x] && (state[x][j+1] !== B))
+			&&  (state[x] && (state[x][j-1] !== B)) ){
+				newState[x][j] += 25;
+			}*/
+		}
+		for(let y=j-1; y >= 0; y--){//up
+			if( isSafe(state, i, y-1)
+			&&  isSafe(state, i+1, y)
+			&&  isSafe(state, i-1, y)){
+				newState[i][y] += 25;
+			}
+			/*
+			if( (state[i][y-1] !== B) 
+			&&  (state[i+1] && (state[i+1][y] !== B))
+			&&  (state[i-1] && (state[i-1][y] !== B)) ){
+				newState[i][y] += 25;
+			}*/
+		}
+		for(let y=j+1; y < state.length; y++){//down
+			if( isSafe(state, i, y+1)
+			&&  isSafe(state, i+1, y)
+			&&  isSafe(state, i-1, y)){
+				newState[i][y] += 25;
+			}
+			/*
+			if( (state[i][y+1] !== B) 
+			&&  (state[i+1] && (state[i+1][y] !== B))
+			&&  (state[i-1] && (state[i-1][y] !== B)) ){
+				newState[i][y] += 25;
+			}
+			*/
+		}
+
+		return newState;
+	}
+}
+
+function isSafe(state, x, y){
+	//TODO being next to a corner isn't always bad, check along row/col to make sure they cannot be instantly atttacked
+	return state[x] && state[x][y] && (state[x][y] !== B) && !isSpecialCell(state.length, x,y);
+}
+
+function isCorner(size, i, j){
+	return i === 0 && j === 0 
+	|| i === size-1 && j === 0
+	|| i === size-1 && j === size-1
+	|| i === 0 && j === size-1;
+}
+
+function isKingsHall(size, i, j){
+	return i === Math.floor(size/2) && j === Math.floor(size/2);
+}
+
+function isSpecialCell(x, y){
+	return isKingsHall(x, y) || isCorner(x, y);
 }
 
 function getRandomInt(min, max) {

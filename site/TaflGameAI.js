@@ -28,7 +28,7 @@ function TaflGameAI(canvas, /*playerColor,*/ variant /*, opponentType*/, player,
 	aiColor = playerColor === W ? B : W;
 
 	//ai = new MinimaxAI(1, aiColor);
-	ai = new HeatseekerAI(aiColor);
+	ai = new HeatseekerAI(aiColor, variant);
 
 	callback.onTurnChange(board.getCurrentPlayer());
 
@@ -124,6 +124,11 @@ function TaflGameAI(canvas, /*playerColor,*/ variant /*, opponentType*/, player,
 		}
 		return { left: x, top : y};
 	}
+
+	this.undo = function(){
+		board.undoFullTurn();
+		renderer.draw(board);
+	};
 }
 /*
 TaflGame.AI = "AI";
