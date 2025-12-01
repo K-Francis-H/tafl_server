@@ -49,6 +49,7 @@
 					onMove : function(move, isGameOver){
 						notator.addMove(move, isGameOver);
 					}
+
 				}
 
 				if(variant && playerColor){
@@ -63,6 +64,12 @@
 				//setup copy state/notation butons
 				var copyBoardStateButton = document.getElementById("board-state-button");
 				var copyBoardNotationButton = document.getElementById("notation-button");
+				var backButton = document.getElementById("back");
+				var forwardButton = document.getElementById("forward");
+
+				backButton.onclick = function(){
+					aiGame.undo();
+				};
 
 				//TODO boardstate may require https since its not displayed on screen
 				//copy board notation
@@ -124,6 +131,9 @@
 				<ol id=notation></ol>
 				<button id=board-state-button class=play-button>Copy Board State</button>
 				<button id=notation-button class=play-button>Copy Notation</button>
+				<br/><br/>
+				<button id=back class=play-button>Back</button>
+				<button id=forward class=play-button>Forward</button>
 			</div>
 		</center>
 	</body>

@@ -195,13 +195,24 @@ function TaflBoard(variant, player, rules){
 			state[move.sx][move.sy] = state[move.ex][move.ey];
 			state[move.ex][move.ey] = E;
 		}
-		if(move.captures){
-			let 
+		if(move.captures){ 
 			for(let i=0; i < move.captures.length; i++){
 				state[move.captures[i].x][move.captures[i].y] = move.captures[i].player;
 			}
 		}
+		//change teams
+		currentPlayer = currentPlayer === B ? W : B;
 	};
+
+	this.undoFullTurn = function(){
+		//call undo twice to reverse the whole turn
+		this.undo();
+		this.undo();
+	}
+
+	this.redo = function(){
+		//TODO keep move stack and reapply it here
+	}
 
 	//used for TaflBoardEditor.js to facilitate moving pieces arbitrarily
 	this.removePiece = function(x, y){
